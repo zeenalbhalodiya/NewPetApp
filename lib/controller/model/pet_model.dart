@@ -1,16 +1,18 @@
-
 class PetModel {
-   String? id;
-   String? name;
-   String? price;
-   dynamic age;
-   String? imageLink;
-   String? category;
-   String? description;
-   List<String> favorite;
+  String? id;
+  String? name;
+  String? price;
+  dynamic age;
+  String? imageLink;
+  String? category;
+  String? description;
+  List<String> favorite;
+  String? breed;
+  String? lifespan;
+  String? weight;
 
   PetModel({
-     this.id,
+    this.id,
     required this.name,
     required this.price,
     required this.age,
@@ -18,6 +20,9 @@ class PetModel {
     required this.category,
     required this.description,
     required this.favorite,
+    required this.breed,
+    required this.lifespan,
+    required this.weight,
   });
 
   factory PetModel.fromJson(Map<String, dynamic> json) {
@@ -30,7 +35,11 @@ class PetModel {
       imageLink: json['imageLink'],
       category: json['category'],
       description: json['description'],
-      favorite: favorites ?? [],    );
+      favorite: favorites ?? [],
+      breed: json['breed'],
+      lifespan: json['lifespan'],
+      weight: json['weight'],
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -42,11 +51,14 @@ class PetModel {
       'category': category,
       'description': description,
       'favorite': favorite,
+      'breed': breed,
+      'lifespan': lifespan,
+      'weight': weight,
     };
 
     // Remove key-value pairs with null or empty string values
     json.removeWhere((key, value) => value == null || value == '');
 
     return json;
-}
+  }
 }

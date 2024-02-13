@@ -7,7 +7,6 @@ import 'package:pet/pages/pet_add.dart';
 import '../components/colors.dart';
 import '../configuration/configuration.dart';
 
-
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -36,9 +35,9 @@ class _HomeScreenState extends State<HomeScreen> {
         AnimatedContainer(
           decoration: isDrawerOpen
               ? BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(25),
-                )
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(25),
+          )
               : BoxDecoration(color: Colors.white),
           transform: Matrix4.translationValues(xOffset, yOffset, 0)
             ..scale(scaleFactor),
@@ -57,27 +56,27 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         isDrawerOpen
                             ? IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    xOffset = 0;
-                                    yOffset = 0;
-                                    scaleFactor = 1;
-                                    isDrawerOpen = false;
-                                  });
-                                },
-                                icon: Icon(Icons.arrow_back_ios),
-                              )
+                          onPressed: () {
+                            setState(() {
+                              xOffset = 0;
+                              yOffset = 0;
+                              scaleFactor = 1;
+                              isDrawerOpen = false;
+                            });
+                          },
+                          icon: Icon(Icons.arrow_back_ios),
+                        )
                             : IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    xOffset = 230;
-                                    yOffset = 150;
-                                    scaleFactor = 0.6;
-                                    isDrawerOpen = true;
-                                  });
-                                },
-                                icon: Icon(Icons.menu),
-                              ),
+                          onPressed: () {
+                            setState(() {
+                              xOffset = 230;
+                              yOffset = 150;
+                              scaleFactor = 0.6;
+                              isDrawerOpen = true;
+                            });
+                          },
+                          icon: Icon(Icons.menu),
+                        ),
                         Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -125,39 +124,43 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       children: [
                         SizedBox(
-                          height: 30.0,
+                          height: 18.0,
                         ),
                         Container(
-                          margin: EdgeInsets.symmetric(horizontal: 15.0),
-                          child: TextField(
-                            decoration: InputDecoration(
-                              enabledBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Colors.transparent),
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: appColor),
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              prefixIcon: Icon(
-                                Icons.search,
-                                color: Colors.grey[400],
-                              ),
-                              hintText: 'Search pet',
-                              hintStyle: TextStyle(
-                                  letterSpacing: 1, color: Colors.grey[400]),
-                              filled: true,
-                              fillColor: Colors.white,
-                              suffixIcon: Icon(
-                                Icons.tune_sharp,
-                                color: Colors.grey[400],
+                          margin: EdgeInsets.symmetric(horizontal: 18.0),
+                          child: SizedBox(
+                            height: 50.0,
+                            child: TextField(
+                              decoration: InputDecoration(
+                                contentPadding: EdgeInsets.symmetric(vertical: 0),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide:
+                                  BorderSide(color: Colors.transparent),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: appColor),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                prefixIcon: Icon(
+                                  Icons.search,
+                                  color: Colors.grey[400],
+                                ),
+                                hintText: 'Search pet',
+                                hintStyle: TextStyle(
+                                    letterSpacing: 1, color: Colors.grey[400]),
+                                filled: true,
+                                fillColor: Colors.white,
+                                suffixIcon: Icon(
+                                  Icons.tune_sharp,
+                                  color: Colors.grey[400],
+                                ),
                               ),
                             ),
                           ),
                         ),
                         SizedBox(
-                          height: 20.0,
+                          height: 18.0,
                         ),
 
                         SingleChildScrollView(
@@ -172,36 +175,36 @@ class _HomeScreenState extends State<HomeScreen> {
                                   controller.selectedCategoryName.value = e['name'];
                                 },
                                 child: Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  padding: EdgeInsets.symmetric(horizontal: 15),
                                   child: Column(
                                     children: [
                                       Obx(() => Container(
-                                            padding: EdgeInsets.all(10),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              border: Border.all(
-                                                  color: controller
-                                                              .selectedCategoryName
-                                                              .value ==
-                                                          e['name']
-                                                      ? success
-                                                      : Colors.transparent,
-                                                  width: 2),
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              boxShadow: shadowList,
-                                            ),
-                                            child: Image(
-                                              image: AssetImage(
-                                                  categories[index]
-                                                      ['imagePath']),
-                                              height: 50,
-                                              width: 50,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          )),
+                                        padding: EdgeInsets.all(07),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          border: Border.all(
+                                              color: controller
+                                                  .selectedCategoryName
+                                                  .value ==
+                                                  e['name']
+                                                  ? success
+                                                  : Colors.transparent,
+                                              width: 2),
+                                          borderRadius:
+                                          BorderRadius.circular(20),
+                                          boxShadow: shadowList,
+                                        ),
+                                        child: Image(
+                                          image: AssetImage(
+                                              categories[index]
+                                              ['imagePath']),
+                                          height: 50,
+                                          width: 50,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )),
                                       SizedBox(
-                                        height: 10.0,
+                                        height: 07.0,
                                       ),
                                       Text(
                                         categories[index]['name'],
@@ -217,184 +220,189 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
 
-                        // SizedBox(
-                        //   height: 2.0,
-                        // ),
-
                         Obx(() => ListView.builder(
-                              physics: ScrollPhysics(),
-                              itemCount: controller.petDataList.length,
-                              scrollDirection: Axis.vertical,
-                              shrinkWrap: true,
-                              itemBuilder: (context, index) {
-                                //database
-                                return GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                DescriptionScreen(
-                                                  pet: controller
-                                                      .petDataList[index],
-                                                ))).then((value) {
-                                                   controller.favoritePetDataList();
-                                                  setState(() {
+                          physics: ScrollPhysics(),
+                          itemCount: controller.petDataList.length,
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            //database
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            DescriptionScreen(
+                                              pet: controller
+                                                  .petDataList[index],
+                                            ))).then((value) {
+                                  controller.favoritePetDataList();
+                                  setState(() {
 
-                                                  });
-                                                });
-                                  },
-                                  child: Container(
-                                    height: 230,
-                                    margin:
-                                        EdgeInsets.symmetric(horizontal: 20),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: Stack(
-                                            children: [
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  color: (index % 2 == 0)
-                                                      ? Colors.blueGrey[200]
-                                                      : Colors
-                                                          .orangeAccent[200],
-                                                  borderRadius:
-                                                      BorderRadius.circular(30),
-                                                  boxShadow: shadowList,
-                                                  //database
-                                                  image: DecorationImage(
-                                                    image: NetworkImage(
-                                                        controller
-                                                            .petDataList[index]
-                                                            .imageLink
-                                                            .toString()),
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                ),
-                                                margin:
-                                                    EdgeInsets.only(top: 40),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Container(
-                                            margin: EdgeInsets.only(
-                                                top: 65, bottom: 20),
-                                            padding: EdgeInsets.all(15),
+                                  });
+                                });
+                              },
+                              child: Container(
+                                height: 205,
+                                margin:
+                                EdgeInsets.symmetric(horizontal: 20),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Stack(
+                                        children: [
+                                          Container(
                                             decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius: BorderRadius.only(
-                                                  topRight: Radius.circular(50),
-                                                  bottomRight:
-                                                      Radius.circular(20)),
+                                              color: (index % 2 == 0)
+                                                  ? Colors.blueGrey[200]
+                                                  : Colors
+                                                  .orangeAccent[200],
+                                              borderRadius:
+                                              BorderRadius.circular(30),
                                               boxShadow: shadowList,
+                                              //database
+                                              image: DecorationImage(
+                                                image: NetworkImage(
+                                                    controller
+                                                        .petDataList[index]
+                                                        .imageLink
+                                                        .toString()),
+                                                fit: BoxFit.cover,
+                                              ),
                                             ),
-                                            child: Column(
+                                            margin:
+                                            EdgeInsets.only(top: 40),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Container(
+                                        margin: EdgeInsets.only(
+                                            top: 65, bottom: 20),
+                                        padding: EdgeInsets.all(15),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.only(
+                                              topRight: Radius.circular(50),
+                                              bottomRight:
+                                              Radius.circular(20)),
+                                          boxShadow: shadowList,
+                                        ),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                          crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment.spaceAround,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                              MainAxisAlignment
+                                                  .spaceBetween,
                                               children: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Text(
-                                                      controller
-                                                          .petDataList[index]
-                                                          .name
-                                                          .toString(),
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 21.0,
-                                                        color: Colors.grey[600],
-                                                      ),
-                                                    ),
-                                                    // (catMapList[index]['sex'] == 'male') ? Icon(
-                                                    //   Icons.male_rounded,
-                                                    //   color: Colors.grey[500],
-                                                    // ) :
-                                                    Icon(
-                                                      Icons.female_rounded,
-                                                      color: Colors.grey[500],
-                                                    ),
-                                                  ],
-                                                ),
                                                 Text(
                                                   controller
-                                                      .petDataList[index].price
+                                                      .petDataList[index]
+                                                      .name
                                                       .toString(),
                                                   style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.grey[500],
+                                                    fontWeight:
+                                                    FontWeight.bold,
+                                                    fontSize: 21.0,
+                                                    color: Colors.grey[600],
                                                   ),
                                                 ),
-                                                Text(
-                                                  controller.petDataList[index]
-                                                          .age +
-                                                      ' years old',
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.grey[400],
-                                                  ),
+                                                // (catMapList[index]['sex'] == 'male') ? Icon(
+                                                //   Icons.male_rounded,
+                                                //   color: Colors.grey[500],
+                                                // ) :
+                                                Icon(
+                                                  Icons.female_rounded,
+                                                  color: Colors.grey[500],
                                                 ),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    // Icon(
-                                                    //   Icons.location_on,
-                                                    //   color: appColor,
-                                                    //   size: 18,
-                                                    // ),
-
-                                                    GestureDetector(
-                                                      onTap: () {
-                                                        controller.updatePetDataInFirestore(
-                                                            controller.petDataList[index].id.toString(), controller.petDataList[index], user!.uid);
-                                                        setState(() {});
-                                                      },
-                                                      child: FutureBuilder<bool>(
-                                                        future: controller.isUserIdInFavorite(
-                                                            controller.petDataList[index].id.toString(), user!.uid.toString()),
-                                                        builder: (context, snapshot) {
-                                                          return
-                                                            snapshot.data!=null && snapshot.data! ?
-
-                                                            Icon( Icons.favorite,
-                                                            color: Colors.redAccent):SizedBox();
-
-                                                        },
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 3,
-                                                    ),
-                                                    // Text(
-                                                    //   'Distance: '+catMapList[index]['distance'],
-                                                    //   style: TextStyle(
-                                                    //     fontWeight: FontWeight.bold,
-                                                    //     color: Colors.grey[400],
-                                                    //   ),
-                                                    // ),
-                                                  ],
-                                                )
                                               ],
                                             ),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            )),
+                                            Text(
+                                              controller
+                                                  .petDataList[index].price
+                                                  .toString() + ' Rs',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.grey[500],
+                                              ),
+                                            ),
+                                            Text(
+                                              controller
+                                                  .petDataList[index].breed
+                                                  .toString(),
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.grey[500],
+                                              ),
+                                            ),
+                                            Text(
+                                              controller.petDataList[index]
+                                                  .age +
+                                                  ' years old',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey[400],
+                                              ),
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                              children: [
+                                                // Icon(
+                                                //   Icons.location_on,
+                                                //   color: appColor,
+                                                //   size: 18,
+                                                // ),
+
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    controller.updatePetDataInFirestore(
+                                                        controller.petDataList[index].id.toString(), controller.petDataList[index], user!.uid);
+                                                    setState(() {});
+                                                  },
+                                                  child: FutureBuilder<bool>(
+                                                    future: controller.isUserIdInFavorite(
+                                                        controller.petDataList[index].id.toString(), user!.uid.toString()),
+                                                    builder: (context, snapshot) {
+                                                      return
+                                                        snapshot.data!=null && snapshot.data! ?
+
+                                                        Icon( Icons.favorite,
+                                                            color: Colors.redAccent):SizedBox();
+
+                                                    },
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 3,
+                                                ),
+                                                // Text(
+                                                //   'Distance: '+catMapList[index]['distance'],
+                                                //   style: TextStyle(
+                                                //     fontWeight: FontWeight.bold,
+                                                //     color: Colors.grey[400],
+                                                //   ),
+                                                // ),
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        )),
                         SizedBox(
                           height: 70,
                         ),

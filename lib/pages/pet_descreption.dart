@@ -26,39 +26,39 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
           children: [
             Positioned.fill(
                 child: Column(
-              children: [
-                Expanded(
-                  child: Container(
-                    color: Colors.blueGrey[300],
-                    child: Image.network(
-                      widget.pet.imageLink.toString(),
-                      height: 300,
-                      width: Get.width,
-                      fit: BoxFit.cover,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        color: Colors.blueGrey[300],
+                        child: Image.network(
+                          widget.pet.imageLink.toString(),
+                          height: 300,
+                          width: Get.width,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Text(
-                                widget.pet.description.toString(),
-                                style: AppTextStyle.normalRegular16
-                                    .copyWith(color: primaryColor),
+                    Expanded(
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(20),
+                                  child: Text(
+                                    widget.pet.description.toString(),
+                                    style: AppTextStyle.normalRegular16
+                                        .copyWith(color: primaryColor),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        ])
-                      ]),
-                ),
-              ],
-            )),
+                            ])
+                          ]),
+                    ),
+                  ],
+                )),
             Container(
               margin: EdgeInsets.only(top: 20),
               child: Align(
@@ -84,13 +84,11 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
             //     child: Hero(
             //         tag: 1,
             //         child: Image.network(widget.pet.imageLink.toString(),height: 300,width: Get.width,fit: BoxFit.cover,)),
-            //
-            //   ),
-            // ),
+            //   ),),
             Align(
               alignment: Alignment.center,
               child: Container(
-                height: 120,
+                height: 150,
                 width: Get.width,
                 margin: EdgeInsets.symmetric(horizontal: 20),
                 decoration: BoxDecoration(
@@ -104,6 +102,9 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        SizedBox(
+                          height: 65,
+                        ),
                         Text(
                           widget.pet.name.toString(),
                           style: TextStyle(
@@ -116,23 +117,63 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                           Icons.female_rounded,
                           color: Colors.grey[600],
                         ),
+                        SizedBox(
+                          width: 12,
+                        ),
+                        Text(
+                          widget.pet.weight.toString(),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 32.0,
+                            color: Colors.black,
+                          ),
+                        ),
                       ],
                     ),
-                    Text(
-                      widget.pet.age + ' years old',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 22.0,
-                        color: Colors.black,
-                      ),
+                    SizedBox(
+                      height: 05,
                     ),
-                    Text(
-                      widget.pet.price.toString(),
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 23.0,
-                        color: Colors.black,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Text(
+                          widget.pet.age + ' Year old',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22.0,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Text(
+                          widget.pet.breed.toString(),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22.0,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Text(
+                          widget.pet.price.toString() + ' Rs',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22.0,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Text(
+                          widget.pet.lifespan.toString() +' Lifespan',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22.0,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -168,7 +209,7 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                             ),
                             child: Center(
                               child: Icon(
-                                snapshot.data!=null && snapshot.data!
+                                snapshot.data != null && snapshot.data!
                                     ? Icons.favorite
                                     : Icons.favorite_border,
                                 color: Colors.white,
@@ -178,7 +219,6 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                         },
                       ),
                     ),
-
                     SizedBox(
                       width: 10,
                     ),
@@ -191,7 +231,7 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                         child: Center(
                           child: Text('Adoption',
                               style:
-                                  TextStyle(color: Colors.white, fontSize: 24)),
+                              TextStyle(color: Colors.white, fontSize: 24)),
                         ),
                       ),
                     ),

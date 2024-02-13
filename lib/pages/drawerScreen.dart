@@ -5,6 +5,7 @@ import 'package:pet/controller/authController.dart';
 import 'package:pet/pages/contactus.dart';
 import 'package:pet/pages/wishlist_screen.dart';
 import '../configuration/configuration.dart';
+import 'package:pet/pages/pet_add.dart';
 
 class DrawerScreen extends StatefulWidget {
   @override
@@ -58,46 +59,51 @@ class _DrawerScreenState extends State<DrawerScreen> {
             child: Column(
               children: drawerItems
                   .map((element) => GestureDetector(
-                        onTap: () {
-                          print("----------test-------");
-                          if (element['title'] == 'Logout') {
-                            _showLogoutDialog(context);
-                          } else if (element['title'] == 'Favourite') {
-                            // Handle favorite icon tap event
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => WishListScreen()),
-                            );
-                          } else if (element['title'] == 'Contact Us') {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ContactUsPage()),
-                            );
-                          }
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Row(
-                            children: [
-                              Icon(
-                                element['icon'],
-                                color: Colors.white,
-                                size: 25,
-                              ),
-                              SizedBox(
-                                width: 15,
-                              ),
-                              Text(element['title'],
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20))
-                            ],
-                          ),
-                        ),
-                      ))
+                onTap: () {
+                  print("----------test-------");
+                  if (element['title'] == 'Logout') {
+                    _showLogoutDialog(context);
+                  } else if (element['title'] == 'Add Pet') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => PetAdd()),
+                    );
+                  } else if (element['title'] == 'Favourite') {
+                    // Handle favorite icon tap event
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => WishListScreen()),
+                    );
+                  } else if (element['title'] == 'Contact Us') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ContactUsPage()),
+                    );
+                  }
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Row(
+                    children: [
+                      Icon(
+                        element['icon'],
+                        color: Colors.white,
+                        size: 25,
+                      ),
+                      SizedBox(
+                        width: 15,
+                      ),
+                      Text(element['title'],
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20))
+                    ],
+                  ),
+                ),
+              ))
                   .toList(),
             ),
           ),

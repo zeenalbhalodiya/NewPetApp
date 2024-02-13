@@ -118,5 +118,5 @@ class ContactInfoItem extends StatelessWidget {
     } catch (e) {
       print('Error launching phone call: $e');
     }
-    }
+  }
 }

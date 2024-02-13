@@ -12,9 +12,9 @@ class UserModel {
   });
   toJson(){
     return{
-    "Email": email,
-    "Password": password,
-    "Confirm Password": confirmpassword,
+      "Email": email,
+      "Password": password,
+      "Confirm Password": confirmpassword,
     };
   }
 }

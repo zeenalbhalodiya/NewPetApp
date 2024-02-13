@@ -12,7 +12,7 @@ class DataController extends  GetxController{
   RxList<PetModel> petDataList = <PetModel>[].obs;
   RxList<PetModel> favoritePetDataList = <PetModel>[].obs;
   final FirebaseStorage _storage = FirebaseStorage.instance;
-final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   User? user = FirebaseAuth.instance.currentUser;
 
@@ -42,8 +42,8 @@ final FirebaseFirestore _firestore = FirebaseFirestore.instance;
       Map<String, dynamic> petData = petModel.toJson();
       // Add the pet data to Firestore
       await FirebaseFirestore.instance.collection('catadd').add(petData);
-Get.back();
-Get.back();
+      Get.back();
+      Get.back();
       print('Pet added to Firestore successfully');
     } catch (error) {
       print('Error adding pet to Firestore: $error');
@@ -74,7 +74,7 @@ Get.back();
 
 
   Future<void> updatePetDataInFirestore(String petId, PetModel updatedData, String userId) async {
- print("-----updatePetDataInFirestore------");
+    print("-----updatePetDataInFirestore------");
 
     try {
       // Ensure the favorite array is not null
@@ -126,56 +126,56 @@ Get.back();
     }
   }
 // Future<void> updatePetDataInFirestore(String petId, PetModel updatedData, String userId) async {
-  //   log("-----updatePetDataInFirestore----");
-  //   try {
-  //     // Get the reference to the document in Firestore
-  //     DocumentReference petRef = FirebaseFirestore.instance.collection('catadd').doc(petId);
-  //
-  //     // Convert PetModel object to map
-  //     Map<String, dynamic> dataToUpdate = updatedData.toJson();
-  //
-  //     // If userId exists in the favorite array, remove it; otherwise, add it
-  //     if (updatedData.favorite!.contains(userId)) {
-  //       dataToUpdate['favorite'] = FieldValue.arrayRemove([userId]);
-  //     } else {
-  //       dataToUpdate['favorite'] = FieldValue.arrayUnion([userId]);
-  //     }
-  //
-  //     // Update the document with the new data
-  //     await petRef.update(dataToUpdate);
-  //     print('Document with ID $petId successfully updated.');
-  //   } catch (error) {
-  //     print('Error updating document: $error');
-  //   }
-  // }
+//   log("-----updatePetDataInFirestore----");
+//   try {
+//     // Get the reference to the document in Firestore
+//     DocumentReference petRef = FirebaseFirestore.instance.collection('catadd').doc(petId);
+//
+//     // Convert PetModel object to map
+//     Map<String, dynamic> dataToUpdate = updatedData.toJson();
+//
+//     // If userId exists in the favorite array, remove it; otherwise, add it
+//     if (updatedData.favorite!.contains(userId)) {
+//       dataToUpdate['favorite'] = FieldValue.arrayRemove([userId]);
+//     } else {
+//       dataToUpdate['favorite'] = FieldValue.arrayUnion([userId]);
+//     }
+//
+//     // Update the document with the new data
+//     await petRef.update(dataToUpdate);
+//     print('Document with ID $petId successfully updated.');
+//   } catch (error) {
+//     print('Error updating document: $error');
+//   }
+// }
 
-  // Future<void> updatePetDataInFirestore(String petId, PetModel updatedData) async {
-  //   try {
-  //     // Get the reference to the document in Firestore
-  //     DocumentReference petRef = FirebaseFirestore.instance.collection('catadd').doc(petId);
-  //
-  //     // Convert PetModel object to map
-  //     Map<String, dynamic> dataToUpdate = updatedData.toJson();
-  //
-  //     // Update the document with the new data
-  //     await petRef.update(dataToUpdate);
-  //     print('Document with ID $petId successfully updated.');
-  //   } catch (error) {
-  //     print('Error updating document: $error');
-  //   }
-  // }
+// Future<void> updatePetDataInFirestore(String petId, PetModel updatedData) async {
+//   try {
+//     // Get the reference to the document in Firestore
+//     DocumentReference petRef = FirebaseFirestore.instance.collection('catadd').doc(petId);
+//
+//     // Convert PetModel object to map
+//     Map<String, dynamic> dataToUpdate = updatedData.toJson();
+//
+//     // Update the document with the new data
+//     await petRef.update(dataToUpdate);
+//     print('Document with ID $petId successfully updated.');
+//   } catch (error) {
+//     print('Error updating document: $error');
+//   }
+// }
 
 
 
 // bool isPetFavorite(String petId) {
-  //   return petFavoriteIds.contains(petId);
-  // }
-  // void toggleFavoriteStatus(String petId) {
-  //   if (isPetFavorite(petId)) {
-  //     petFavoriteIds.remove(petId);
-  //   } else {
-  //     petFavoriteIds.add(petId);
-  //   }
-  //   update();
-  // }
+//   return petFavoriteIds.contains(petId);
+// }
+// void toggleFavoriteStatus(String petId) {
+//   if (isPetFavorite(petId)) {
+//     petFavoriteIds.remove(petId);
+//   } else {
+//     petFavoriteIds.add(petId);
+//   }
+//   update();
+// }
 }

@@ -64,5 +64,5 @@ List<Map> drawerItems = [
   {
     'icon': FontAwesomeIcons.signOutAlt,
     'title':'Logout'
-    },
+  },
 ];

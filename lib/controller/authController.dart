@@ -211,6 +211,6 @@ class AuthController extends GetxController {
   // Check if the user is currently signed in
   Future<bool> isUserSignedIn() async {
     return _auth.currentUser!=null;
-    }
+  }
 
 }
