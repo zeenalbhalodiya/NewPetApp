@@ -581,11 +581,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         CrossAxisAlignment
                                                             .center,
                                                     children: [
-                                                      // Icon(
-                                                      //   Icons.edit,
-                                                      //   color: appColor,
-                                                      //   size: 18,
-                                                      // ),
+                                                      Icon(
+                                                        Icons.edit,
+                                                        color: appColor,
+                                                        size: 18,
+                                                      ),
 
                                                       // GestureDetector(
                                                       //   onTap: () {
