@@ -1,11 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pet/components/colors.dart';
 import 'package:pet/controller/authController.dart';
+import 'package:pet/pages/PaymentDetailsScreen.dart';
 import 'package:pet/pages/contactus.dart';
 import 'package:pet/pages/wishlist_screen.dart';
 import '../configuration/configuration.dart';
 import 'package:pet/pages/pet_add.dart';
+import '../controller/data_controller.dart';
+import '../controller/model/users_model.dart';
 
 class DrawerScreen extends StatefulWidget {
   @override
@@ -13,6 +17,17 @@ class DrawerScreen extends StatefulWidget {
 }
 
 class _DrawerScreenState extends State<DrawerScreen> {
+  User? user = FirebaseAuth.instance.currentUser;
+
+  var controller = Get.put(DataController());
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -27,25 +42,47 @@ class _DrawerScreenState extends State<DrawerScreen> {
               SizedBox(
                 width: 10,
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Miroslava Savitskaya',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                        height: 5),
-                  ),
-                  Text('Active Status',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          height: -2))
-                ],
-              )
+
+              FutureBuilder<UserModel>(
+                future: controller.getUserModel(user!.uid),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    UserModel userModel = snapshot.data!;
+                    // Now you can use the userModel in your UI
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          userModel.name ?? user!.displayName!,
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              height: 3),
+                        ),
+                        Text(
+                          userModel.email,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                        // Text( userModel.phone ?? user!.phoneNumber!,
+                        //     style: TextStyle(
+                        //         color: Colors.white,
+                        //         fontWeight: FontWeight.bold,
+                        //         fontSize: 20,
+                        //         height: -2))
+                      ],
+                    );
+                  }
+                },
+              ),
             ],
           ),
           GestureDetector(
@@ -64,10 +101,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
                   if (element['title'] == 'Logout') {
                     _showLogoutDialog(context);
                   } else if (element['title'] == 'Add Pet') {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => PetAdd()),
-                    );
+                    Get.to(()=>PetAdd());
+
                   } else if (element['title'] == 'Favourite') {
                     // Handle favorite icon tap event
                     Navigator.push(
@@ -80,6 +115,12 @@ class _DrawerScreenState extends State<DrawerScreen> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => ContactUsPage()),
+                    );
+                  }else if(element['title'] =='Transactions'){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PaymentDetailsScreen()),
                     );
                   }
                 },

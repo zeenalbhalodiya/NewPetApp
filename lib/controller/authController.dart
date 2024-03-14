@@ -11,14 +11,15 @@ import '../pages/main_home_page.dart';
 import 'model/user_repository.dart';
 
 class AuthController extends GetxController {
+  TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
   final userRepo = Get.put(UserRepository());
 
-  get nameController => null;
 
   Future<void> updatePasswordInFirestore(String email, String newPassword) async {
     try {
@@ -53,48 +54,62 @@ class AuthController extends GetxController {
       // ...
     }
   }
-
   Future clearForm() async {
     nameController.clear();
     emailController.clear();
+    phoneController.clear();
     passwordController.clear();
     passwordController.clear();
   }
-  // Register with email and password
+
   Future<void> registerWithEmailAndPassword(BuildContext context) async {
     try {
+      // Ensure all required fields are not empty
+      if (nameController.text.trim().isEmpty ||
+          emailController.text.trim().isEmpty ||
+          passwordController.text.isEmpty ||
+          confirmPasswordController.text.isEmpty ||
+          phoneController.text.trim().isEmpty) {
+        throw 'Please fill in all fields';
+      }
+
+      // Ensure passwords match
+      if (passwordController.text != confirmPasswordController.text) {
+        throw 'Passwords do not match';
+      }
+
+      // Create user with email and password
       UserCredential userCredential =
       await _auth.createUserWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text,
       );
-      if(userCredential.user != null) {
-        User user = userCredential.user!;
-        // Send email verification
-        await userCredential.user!
-            .sendEmailVerification()
-            .whenComplete(() async =>
-            saveUserDetails(UserModel(id: user.uid.toString(),
-                email:user.email.toString().trim(), password: passwordController.text,
-                confirmpassword: confirmPasswordController.text)));
 
-        await CommonMethod().getXSnackBar(
-          "Success",
-          'Verification email sent to ${userCredential.user!.email}',
-          Colors.green,
-        )
-            .then((value) => Get.to(() => LoginScreen())
-        );
-      }
+      // Get the user object from the userCredential
+      User user = userCredential.user!;
+
       // Send email verification
-      await userCredential.user!
-          .sendEmailVerification( )
-          .whenComplete(() async => await CommonMethod().getXSnackBar(
+      await user.sendEmailVerification();
+
+      // Save user details to Firestore
+      await saveUserDetails(UserModel(
+        id: user.uid,
+        email: user.email!,
+        password: passwordController.text,
+        confirmpassword: confirmPasswordController.text,
+        name: nameController.text.trim(),
+        phone: phoneController.text.trim(),
+      ));
+
+      // Show success message
+      await CommonMethod().getXSnackBar(
         "Success",
-        'Verification email sent to ${userCredential.user!.email}',
+        'Verification email sent to ${user.email}',
         Colors.green,
-      ))
-          .then((value) => Get.to(() => LoginScreen()));
+      );
+
+      // Navigate to login screen after registration
+      Get.to(() => LoginScreen());
     } on FirebaseAuthException catch (e) {
       // Handle specific error cases
       if (e.code == 'email-already-in-use') {
@@ -117,10 +132,17 @@ class AuthController extends GetxController {
           Colors.red,
         );
       }
+    } catch (e) {
+      // Handle other unexpected errors
+      await CommonMethod().getXSnackBar(
+        "Error",
+        'Failed to register: $e',
+        Colors.red,
+      );
     }
   }
   Future saveUserDetails(UserModel user) async {
-    userRepo.createUser(user);
+    userRepo.createUser(user.id!,user);
     // controller.registerWithEmailAndPassword(context);
   }
   // Sign in with email and password
@@ -195,9 +217,6 @@ class AuthController extends GetxController {
       return null;
     }
   }
-
-
-
 
   // Sign out
   Future<void> signOut() async {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pet/pages/pet_descreption.dart';
 
+import '../components/colors.dart';
 import '../configuration/configuration.dart';
 import '../controller/data_controller.dart';
 
@@ -24,7 +25,7 @@ class _WishListScreenState extends State<WishListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Favourite'),),
+      appBar: AppBar(title: Text('Favourite'), backgroundColor: appColor,),
       body: Center(
         child: Column(
           children: [
@@ -121,10 +122,10 @@ class _WishListScreenState extends State<WishListScreen> {
                                       //   Icons.male_rounded,
                                       //   color: Colors.grey[500],
                                       // ) :
-                                      Icon(
-                                        Icons.female_rounded,
-                                        color: Colors.grey[500],
-                                      ),
+                                      // Icon(
+                                      //   Icons.female_rounded,
+                                      //   color: Colors.grey[500],
+                                      // ),
                                     ],
                                   ),
                                   Text(
@@ -137,9 +138,7 @@ class _WishListScreenState extends State<WishListScreen> {
                                     ),
                                   ),
                                   Text(
-                                    controller.favoritePetDataList[index]
-                                        .age +
-                                        ' years old',
+                                    controller.favoritePetDataList[index].breed.toString(),
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.grey[400],

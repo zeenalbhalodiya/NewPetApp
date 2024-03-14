@@ -28,8 +28,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   @override
   void initState() {
     super.initState();
-    // dataStorage.write("isOnBoarded", true);
   }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -48,11 +48,15 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     title: "Create your Account",
                   ),
                   customHeight(40),
+                  TextFormFieldWidget(controller: controller.nameController,hintText: "Name",prefixIcon: Icon(Icons.person,color: Colors.grey[350],),),
+
                   height16,
                   EmailWidget(
                     controller: controller.emailController,
                     hintText: "Email",
                   ),
+                  height16,
+                  TextFormFieldWidget(controller: controller.phoneController,hintText: "Phone Number",prefixIcon: Icon(Icons.phone,color: Colors.grey[350],),),
                   height16,
                   PasswordWidget(
                     controller: controller.passwordController,
@@ -72,9 +76,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                   customHeight(30),
                   PrimaryTextButton(
                     onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        controller.registerWithEmailAndPassword(context);
-                      }
+
                       if (controller.emailController.text.isEmpty) {
                         CommonMethod()
                             .getXSnackBar('Error', 'Please enter email', red);
@@ -103,7 +105,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                   const OrWidget(),
                   customHeight(25),
                   GestureDetector(
-                    onTap: (){
+                    onTap: () {
                       controller.handleSignInGoogle();
                     },
                     child: ShadowContainerWidget(
@@ -137,11 +139,52 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                       Get.to(() => const LoginScreen());
                     },
                   ),
+                  SizedBox(height: 20),
                 ],
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+// InputTextFieldWidget
+class InputTextFieldWidget extends StatelessWidget {
+  final TextEditingController controller;
+  final String hintText;
+  final IconData icon;
+  final Color iconColor;
+  final String? Function(String?)? validator;
+  final TextStyle? textStyle;
+  final Color? backgroundColor;
+
+  const InputTextFieldWidget({
+    Key? key,
+    required this.controller,
+    required this.hintText,
+    required this.icon,
+    required this.iconColor,
+    this.validator,
+    this.textStyle,
+    this.backgroundColor,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: backgroundColor,
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          hintText: hintText,
+          prefixIcon: Icon(icon,  color: iconColor),
+          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+          border: InputBorder.none,
+      ),
+      validator: validator,
+      style: textStyle,
       ),
     );
   }

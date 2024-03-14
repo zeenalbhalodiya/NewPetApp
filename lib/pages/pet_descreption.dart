@@ -2,9 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pet/components/app_text_style.dart';
+import 'package:pet/components/colors.dart';
 import 'package:pet/configuration/configuration.dart';
 import 'package:pet/controller/data_controller.dart';
-import 'package:pet/pages/main_home_page.dart';
+import 'package:pet/pages/paymentScreen.dart';
 import '../controller/model/pet_model.dart';
 
 class DescriptionScreen extends StatefulWidget {
@@ -26,39 +27,39 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
           children: [
             Positioned.fill(
                 child: Column(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        color: Colors.blueGrey[300],
-                        child: Image.network(
-                          widget.pet.imageLink.toString(),
-                          height: 300,
-                          width: Get.width,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+              children: [
+                Expanded(
+                  child: Container(
+                    color: Colors.blueGrey[300],
+                    child: Image.network(
+                      widget.pet.imageLink.toString(),
+                      height: 300,
+                      width: Get.width,
+                      fit: BoxFit.cover,
                     ),
-                    Expanded(
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(20),
-                                  child: Text(
-                                    widget.pet.description.toString(),
-                                    style: AppTextStyle.normalRegular16
-                                        .copyWith(color: primaryColor),
-                                  ),
-                                ),
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: Text(
+                                widget.pet.description.toString(),
+                                style: AppTextStyle.normalRegular16
+                                    .copyWith(color: primaryColor),
                               ),
-                            ])
-                          ]),
-                    ),
-                  ],
-                )),
+                            ),
+                          ),
+                        ])
+                      ]),
+                ),
+              ],
+            )),
             Container(
               margin: EdgeInsets.only(top: 20),
               child: Align(
@@ -140,7 +141,7 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                           widget.pet.age + ' Year old',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 22.0,
+                            fontSize: 18.0,
                             color: Colors.black,
                           ),
                         ),
@@ -148,7 +149,7 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                           widget.pet.breed.toString(),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 22.0,
+                            fontSize: 18.0,
                             color: Colors.black,
                           ),
                         ),
@@ -158,18 +159,18 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Text(
-                          widget.pet.price.toString() + ' Rs',
+                          widget.pet.priceText.toString() + ' Rs',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 22.0,
+                            fontSize: 18.0,
                             color: Colors.black,
                           ),
                         ),
                         Text(
-                          widget.pet.lifespan.toString() +' Lifespan',
+                          widget.pet.lifespan.toString() + ' Lifespan',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 22.0,
+                            fontSize: 18.0,
                             color: Colors.black,
                           ),
                         ),
@@ -200,7 +201,7 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                             height: 60,
                             width: 60,
                             decoration: BoxDecoration(
-                              color: Colors.green[900],
+                              color: appColor,
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
                                 color: Colors.white,
@@ -223,15 +224,26 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                       width: 10,
                     ),
                     Expanded(
-                      child: Container(
-                        height: 60,
-                        decoration: BoxDecoration(
-                            color: Colors.green[900],
-                            borderRadius: BorderRadius.circular(20)),
-                        child: Center(
-                          child: Text('Adoption',
-                              style:
-                              TextStyle(color: Colors.white, fontSize: 24)),
+                      child: GestureDetector(
+                        onTap: () {
+                          // Navigate to PaymentScreen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => paymentScreen(pet: widget.pet,),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          height: 60,
+                          decoration: BoxDecoration(
+                              color: appColor,
+                              borderRadius: BorderRadius.circular(20)),
+                          child: Center(
+                            child: Text('Adoption',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 24)),
+                          ),
                         ),
                       ),
                     ),

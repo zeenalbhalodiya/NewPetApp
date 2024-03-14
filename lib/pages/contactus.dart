@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../components/colors.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -24,6 +26,7 @@ class ContactUsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Contact Us'),
+        backgroundColor: appColor,
       ),
       body: Center(
         child: Column(

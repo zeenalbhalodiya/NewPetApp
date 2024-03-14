@@ -12,17 +12,9 @@ String details = 'My job requires moving to another country.'
     'I am looking for good people who will shelter my pet';
 
 List<Map> categories = [
-  {"name": 'All',"imagePath":'assets/images/png/cat.jpeg'},
+  {"name": 'All',"imagePath":'assets/images/png/cat_dog.jpeg'},
   {"name": 'Cat',"imagePath":'assets/images/png/cat.jpeg'},
   {"name": 'Dog',"imagePath":'assets/images/png/dog.jpeg'},
-  // {"name": 'Horses',"imagePath":'images/horse.png'},
-  // {"name": 'Parrots',"imagePath":'images/parrot.png'},
-  // {"name": 'Rabbits',"imagePath":'images/rabbit.png'},
-  // {"name": 'Cats',"imagePath":'images/cat.png'},
-  // {"name": 'Dogs',"imagePath":'images/dog.png'},
-  // {"name": 'Horses',"imagePath":'images/horse.png'},
-  // {"name": 'Parrots',"imagePath":'images/parrot.png'},
-  // {"name": 'Rabbits',"imagePath":'images/rabbit.png'},
 ];
 
 List<Map> catMapList = [
@@ -32,7 +24,6 @@ List<Map> catMapList = [
 ];
 
 List<Map> navList = [
-  {'icon': Icons.pets_rounded,'title': 'Adoption'},
   {'icon': Icons.markunread_mailbox_rounded,'title': 'Donation'},
   {'icon': Icons.add_rounded,'title': 'Add Pet'},
   {'icon': Icons.favorite_rounded,'title': 'Favorites'},
@@ -42,8 +33,8 @@ List<Map> navList = [
 
 List<Map> drawerItems = [
   {
-    'icon': FontAwesomeIcons.paw,
-    'title': 'Adoption'
+    'icon': FontAwesomeIcons.history,
+    'title': 'Transactions'
   },
   {
     'icon': FontAwesomeIcons.plus,
