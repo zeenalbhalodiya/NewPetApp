@@ -51,74 +51,12 @@ class Circle {
   }
 }
 
+// zeenal process indicatore
 class ProcessIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // return Material(
-    //   color: Colors.transparent,
-    //   child: Align(
-    //     alignment: Alignment.center,
-    //     child: Material(
-    //       color: Colors.transparent,
-    //       child: Container(
-    //         height: 70,
-    //         width: 80,
-    //         decoration: BoxDecoration(
-    //           color: primaryBlack.withOpacity(0.9),
-    //         ),
-    //         child: Stack(
-    //           alignment: Alignment.center,
-    //           children: [
-    //             TextAndStyle(
-    //               title: "Loading",
-    //               textAlign: TextAlign.center,
-    //               color: whiteColor,
-    //               fontSize: 8,
-    //             ),
-    //             SizedBox(
-    //               width: 50,
-    //               height: 50,
-    //               child: TweenAnimationBuilder<double>(
-    //                 tween: Tween<double>(begin: 0.0, end: 1),
-    //                 duration: const Duration(milliseconds: 3500),
-    //                 builder: (context, value, _) => CircularProgressIndicator(
-    //                   valueColor:
-    //                       AlwaysStoppedAnimation<Color>(Color(0xFF164396)),
-    //                   backgroundColor: Color(0xFF0895F3),
-    //                 ),
-    //               ),
-    //             ),
-    //           ],
-    //         ),
-    //       ),
-    //     ),
-    //   ),
-    // );
-    // return WillPopScope(
-    //   onWillPop: () => Future.value(Circle.entry == false),
-    //   child: Material(
-    //     color: Colors.transparent,
-    //     child: Container(
-    //       child: ClipRRect(
-    //         borderRadius: BorderRadius.circular(15.0),
-    //         child: new BackdropFilter(
-    //             filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-    //             child: Container(
-    //               padding: EdgeInsets.all(130),
-    //               height: 50,
-    //               child: Lottie.asset(
-    //                 'assets/json/loader.json',
-    //                 height: 50,
-    //                 width: 50,
-    //               ),
-    //             )),
-    //       ),
-    //     ),
-    //   ),
-    // );
-
     return Material(
-      color: Colors.transparent,
+      color: Colors.black.withOpacity(0.5),
       child: Center(
         child: CircularProgressIndicator(
           strokeWidth: 3,

@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 class PetModel {
   String? id;
+  String? userId;
   String? name;
   String? price;
   dynamic age;
@@ -19,8 +20,9 @@ class PetModel {
 
 
   PetModel({
-    this.id,
+    required this.id,
     required this.name,
+    required this.userId,
     required this.price,
     required this.age,
     required this.imageLink,
@@ -41,6 +43,7 @@ class PetModel {
         e.toString()).toList();
     return PetModel(
       id: json['id'],
+      userId: json['userId'],
       name: json['name'],
       price: json['price'],
       age: json['age'],
@@ -60,7 +63,9 @@ class PetModel {
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {
+      'id': id,
       'name': name,
+      'userId': userId,
       'price': price,
       'age': age,
       'imageLink': imageLink,

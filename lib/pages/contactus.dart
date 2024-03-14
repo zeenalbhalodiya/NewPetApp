@@ -3,23 +3,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../components/colors.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Contact Us Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: ContactUsPage(),
-    );
-  }
-}
-
 class ContactUsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

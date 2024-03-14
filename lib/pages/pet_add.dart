@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,8 @@ import 'home_screen.dart';
 import 'main_home_page.dart';
 
 class PetAdd extends StatefulWidget {
-  const PetAdd({Key? key});
+  final PetModel? petModel;
+  const PetAdd({Key? key, this.petModel});
 
   @override
   State<PetAdd> createState() => _PetAddState();
@@ -32,14 +34,16 @@ class _PetAddState extends State<PetAdd> {
   TextEditingController ageController = TextEditingController();
   TextEditingController taxController = TextEditingController();
   TextEditingController totalPriceController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
   String? selectedAge;
   String? selectedCategory;
   String? selectedBreed;
   String? selectedLifespan;
   String? selectedWeight;
-  String? description;
+  // String? description;
   double? tax;
   static Circle processIndicator = Circle();
+  User? user = FirebaseAuth.instance.currentUser;
 
   var controller = Get.put(DataController());
   List<String> ageList = [
@@ -160,14 +164,9 @@ class _PetAddState extends State<PetAdd> {
     throw UnimplementedError('uploadPetImage method is not implemented');
   }
 
-  void main() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp();
-    runApp(MyApp());
-  }
-
   void initState() {
     super.initState();
+    refreshPetEditData();
     priceController.addListener(_updateTax);
     _updateTax();
   }
@@ -199,91 +198,120 @@ class _PetAddState extends State<PetAdd> {
   }
 
   Future _handleAddButton(BuildContext context) async {
-    if (description!.split(' ').length < 20|| description!.split(' ').length > 60) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Description must contain 20 to 60 words.'),
-        ),
-      );
+    if (descriptionController.text.split(' ').length < 20 ||
+        descriptionController.text.split(' ').length > 60) {
+
+      CommonMethod().getXSnackBar("Error", 'Description must contain 20 to 60 words.', red);
       return;
     }
-    if (_image == null ||
+
+
+    if ((widget.petModel == null && _image == null) ||
         nameController.text.isEmpty ||
         selectedAge == null ||
         selectedCategory == null ||
-        description == null ||
-        description!.isEmpty ||
+        descriptionController.text.isEmpty ||
         priceController.text.isEmpty) {
-
-      CommonMethod().getXSnackBar("Error", "All fields are required.", Colors.red);
-      //
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(
-      //     content: Text('All fields are required.'),
-      //   ),
-      // );
+      CommonMethod()
+          .getXSnackBar("Error", "All fields are required.", Colors.red);
       return;
-    }else{
-      try {
-        await saveData(petModel: PetModel(
-            name: nameController.text?? '',
-            price: double.parse(priceController.text).toString(),
-            age: selectedAge ?? '',
-            category: selectedCategory ?? '',
-            description: description ?? '',
-            favorite: [],
-isSold: false,
-            breed: selectedBreed ?? '',
-            lifespan: selectedLifespan ?? '',
-            weight: selectedWeight ?? '',
-            tax: taxController.text,
-            priceText: totalPriceController.text, imageLink: '', purchaseBy: ''
-        ), file: _image!,context: context);
+    } else {
 
-      }catch (error) {
-        // Show error message if saving data fails
-
-        CommonMethod().getXSnackBar("Error", "Failed to add: $error", Colors.red);
-
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(
-        //     content: Text('Failed to add: $error'),
-        //     duration: Duration(seconds: 2),
-        //   ),
-        // );
-      }
+      // try {
+        if (widget.petModel != null) {
+          await updateData(
+              petModel: PetModel(
+                  userId: user!.uid,
+                  name: nameController.text ?? '',
+                  price: double.parse(priceController.text).toString(),
+                  age: selectedAge ?? '',
+                  category: selectedCategory ?? '',
+                  description: descriptionController.text ?? '',
+                  favorite: [],
+                  isSold: false,
+                  breed: selectedBreed ?? '',
+                  lifespan: selectedLifespan ?? '',
+                  weight: selectedWeight ?? '',
+                  tax: taxController.text,
+                  priceText: totalPriceController.text,
+                  imageLink: '',
+                  purchaseBy: '',
+                  id: widget.petModel!.id),
+              file: _image ?? null,
+              context: context,
+              networkUrl: widget.petModel != null && _image == null
+                  ? widget.petModel!.imageLink
+                  : null);
+        } else {
+          await saveData(
+            petModel: PetModel(
+                userId: user!.uid,
+                name: nameController.text ?? '',
+                price: double.parse(priceController.text).toString(),
+                age: selectedAge ?? '',
+                category: selectedCategory ?? '',
+                description: descriptionController.text ?? '',
+                favorite: [],
+                isSold: false,
+                breed: selectedBreed ?? '',
+                lifespan: selectedLifespan ?? '',
+                weight: selectedWeight ?? '',
+                tax: taxController.text,
+                priceText: totalPriceController.text,
+                imageLink: '',
+                purchaseBy: '',
+                id: ''),
+            file: _image!,
+            context: context,
+          );
+        }
+      // } catch (error) {
+      //   CommonMethod()
+      //       .getXSnackBar("Error", "Failed to add: $error", Colors.red);
+      // }
     }
-    // showDialog(
-    //   context: context,
-    //   builder: (context) {
-    //     return Center(child: CircularProgressIndicator());
-    //   },
-    // );
-
-    // await Future.delayed(Duration(seconds: 2));
-    // Get.back();
-    // setState(() {
-    //   isLoading = true;
-    // });
-
-    // Future.delayed(Duration(seconds: 1), () {
-    //   // Navigator.of(context).pop();
-    //   Get.back();
-    // });
-
-    // Delay the navigation to give time for the user to see the success message
-    // Future.delayed(Duration(seconds: 2), () {
-    //   // Navigate to the home page
-    //   Navigator.of(context).pop(); // Close the current screen
-    // });
   }
 
-  Future<String> uploadImageToStorage(String childName, Uint8List file) async{
-    Reference ref = _storage.ref().child(childName).child(file.length.toString());
+  Future<String> uploadImageToStorage(String childName, Uint8List file) async {
+    Reference ref =
+        _storage.ref().child(childName).child(file.length.toString());
     UploadTask uploadTask = ref.putData(file);
     TaskSnapshot snapshot = await uploadTask;
     String downloadUrl = await snapshot.ref.getDownloadURL();
     return downloadUrl;
+  }
+
+  Future<void> updateData({
+    required PetModel petModel,
+    required Uint8List? file,
+    required BuildContext context,
+    required String? networkUrl,
+  }) async {
+    log("---updateData--->>${petModel.toJson().toString()}");
+    try {
+      processIndicator.show(context);
+      String imageUrl;
+      if (networkUrl != null) {
+        imageUrl = networkUrl;
+        processIndicator.hide(context);
+      } else {
+        imageUrl = await uploadImageToStorage('catadd', file!).whenComplete(() {
+          processIndicator.hide(context);
+        });
+      }
+
+      petModel.imageLink = imageUrl;
+      await FirebaseFirestore.instance
+          .collection('catadd')
+          .doc(petModel.id)
+          .update(petModel.toJson());
+      log("-----petModel------${petModel.toJson()}");
+      Get.to(() => HomePage());
+      CommonMethod().getXSnackBar("Success", 'Successfully updated!', success);
+    } catch (error) {
+      processIndicator.hide(context);
+      CommonMethod().getXSnackBar("Error", 'Failed to update pet: $error', red);
+    }
   }
 
   Future<void> saveData({
@@ -292,46 +320,52 @@ isSold: false,
     required BuildContext context,
   }) async {
     try {
-      // String imageUrl = (await uploadPetImage) as String;
       processIndicator.show(context);
-      String imageUrl = await uploadImageToStorage('catadd', file).whenComplete(() {
+      String imageUrl =
+          await uploadImageToStorage('catadd', file).whenComplete(() {
         processIndicator.hide(context);
       });
       petModel.imageLink = imageUrl;
-      // await FirebaseFirestore.instance.collection('catadd').add({
-      //   'name': petModel.name,
-      //   'price': petModel.price,
-      //   'age': petModel.age,
-      //   'image_Link': petModel.imageLink,
-      //   'category': petModel.category,
-      //   'description': petModel.description,
-      //   'favorite': petModel.favorite,
-      //   'breed': petModel.breed,
-      //   'lifespan': petModel.lifespan,
-      //   'weight': petModel.weight,
-      //   'tax': petModel.tax,
-      //   'priceText': petModel.priceText
-      // });
-
-      await FirebaseFirestore.instance.collection('catadd').add(petModel.toJson());
-
+      var docRef = await FirebaseFirestore.instance
+          .collection('catadd')
+          .add(petModel.toJson());
+      FirebaseFirestore.instance
+          .collection('catadd')
+          .doc(docRef.id)
+          .update({'id': docRef.id});
       log("-----petModel------${petModel.toJson()}");
-      // Get.back();
-      // Get.back();
-      Get.to(()=>HomePage());
-
+      Get.to(() => HomePage());
       CommonMethod().getXSnackBar("Success", 'Successfully added!', success);
-
     } catch (error) {
       processIndicator.hide(context);
       CommonMethod().getXSnackBar("Success", 'Failed to add pet: $error', red);
     }
   }
+
+  Future refreshPetEditData() async {
+    if (widget.petModel != null) {
+      log("---widget.petModel--- ${widget.petModel!.toJson()}");
+      nameController.text = widget.petModel!.name!;
+      priceController.text = widget.petModel!.price!;
+      selectedAge = widget.petModel!.age;
+      selectedCategory = widget.petModel!.category;
+      descriptionController.text = widget.petModel!.description!;
+      selectedBreed = widget.petModel!.breed;
+      selectedLifespan = widget.petModel!.lifespan;
+      selectedWeight = widget.petModel!.weight;
+      taxController.text = widget.petModel!.tax!;
+      totalPriceController.text = widget.petModel!.priceText!;
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Pet Add", style: TextStyle(color: Colors.white),
+        title: Text(
+          widget.petModel == null ? "Pet Add" : "Pet Edit",
+          style: TextStyle(color: Colors.white),
         ),
         backgroundColor: appColor,
       ),
@@ -344,12 +378,21 @@ isSold: false,
                 children: [
                   _image != null
                       ? CircleAvatar(
-                    radius: 64,
-                    backgroundImage: MemoryImage(_image!),
-                  )
-                      : const CircleAvatar(
-                    radius: 64,
-                    backgroundImage: AssetImage('assets/images/png/avatar-pet.png'),),
+                          radius: 64,
+                          backgroundImage: MemoryImage(_image!),
+                        )
+                      : widget.petModel != null &&
+                              widget.petModel!.imageLink != null
+                          ? CircleAvatar(
+                              radius: 64,
+                              backgroundImage:
+                                  NetworkImage(widget.petModel!.imageLink!),
+                            )
+                          : const CircleAvatar(
+                              radius: 64,
+                              backgroundImage: AssetImage(
+                                  'assets/images/png/avatar-pet.png'),
+                            ),
                   Positioned(
                     child: IconButton(
                       onPressed: selectImage,
@@ -373,7 +416,8 @@ isSold: false,
                     decoration: InputDecoration(
                       labelText: 'Name',
                       border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10),),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                    ),
                   ),
                 ),
               ),
@@ -393,14 +437,15 @@ isSold: false,
                     },
                     items: ageList
                         .map((age) => DropdownMenuItem<String>(
-                      value: age,
-                      child: Text(age),
-                    ))
+                              value: age,
+                              child: Text(age),
+                            ))
                         .toList(),
                     decoration: InputDecoration(
                       labelText: 'Age',
                       border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10),),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                    ),
                   ),
                 ),
               ),
@@ -420,14 +465,15 @@ isSold: false,
                     },
                     items: categories
                         .map((category) => DropdownMenuItem<String>(
-                      value: category['name'],
-                      child: Text(category['name']),
-                    ))
+                              value: category['name'],
+                              child: Text(category['name']),
+                            ))
                         .toList(),
                     decoration: InputDecoration(
                       labelText: 'Category',
                       border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10),),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                    ),
                   ),
                 ),
               ),
@@ -447,14 +493,15 @@ isSold: false,
                     },
                     items: breedList
                         .map((breed) => DropdownMenuItem<String>(
-                      value: breed,
-                      child: Text(breed),
-                    ))
+                              value: breed,
+                              child: Text(breed),
+                            ))
                         .toList(),
                     decoration: InputDecoration(
                       labelText: 'Type of Breed',
                       border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10),),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                    ),
                   ),
                 ),
               ),
@@ -474,9 +521,9 @@ isSold: false,
                     },
                     items: lifespan
                         .map((lifespan) => DropdownMenuItem<String>(
-                      value: lifespan,
-                      child: Text(lifespan),
-                    ))
+                              value: lifespan,
+                              child: Text(lifespan),
+                            ))
                         .toList(),
                     decoration: InputDecoration(
                       labelText: 'Lifespan',
@@ -502,14 +549,15 @@ isSold: false,
                     },
                     items: weight
                         .map((weight) => DropdownMenuItem<String>(
-                      value: weight,
-                      child: Text(weight),
-                    ))
+                              value: weight,
+                              child: Text(weight),
+                            ))
                         .toList(),
                     decoration: InputDecoration(
                       labelText: 'Weight',
                       border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10),),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                    ),
                   ),
                 ),
               ),
@@ -521,15 +569,12 @@ isSold: false,
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   child: TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        description = value;
-                      });
-                    },
+                    controller: descriptionController,
                     decoration: InputDecoration(
                       labelText: 'Description',
                       border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10),),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                    ),
                   ),
                 ),
               ),
@@ -545,7 +590,8 @@ isSold: false,
                     decoration: InputDecoration(
                       labelText: 'Price',
                       border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10),),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                    ),
                     keyboardType: TextInputType.number,
                   ),
                 ),
@@ -567,8 +613,7 @@ isSold: false,
                     keyboardType: TextInputType.number,
                     readOnly: true,
                     onTap: () {
-                      double price =
-                          double.tryParse(priceController.text) ?? 0;
+                      double price = double.tryParse(priceController.text) ?? 0;
                       double tax = price * 0.02;
                       taxController.text = tax.toStringAsFixed(2);
                     },
@@ -592,12 +637,10 @@ isSold: false,
                     keyboardType: TextInputType.number,
                     readOnly: true,
                     onChanged: (value) {
-                      double price =
-                          double.tryParse(priceController.text) ?? 0;
+                      double price = double.tryParse(priceController.text) ?? 0;
                       tax = double.tryParse(taxController.text) ?? 0;
                       double totalPrice = price + tax!;
-                      totalPriceController.text =
-                          totalPrice.toStringAsFixed(2);
+                      totalPriceController.text = totalPrice.toStringAsFixed(2);
                     },
                   ),
                 ),
@@ -617,7 +660,10 @@ isSold: false,
                   ),
                   minimumSize: Size(150, 50),
                 ),
-                child: Text('Add', style: TextStyle(color: Colors.white, fontSize: 20),),
+                child: Text(
+                  widget.petModel == null ? 'Add' : "Update",
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
               ),
               SizedBox(height: 30),
             ],
