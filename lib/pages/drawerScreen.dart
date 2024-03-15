@@ -11,7 +11,6 @@ import 'package:pet/pages/wishlist_screen.dart';
 import '../configuration/configuration.dart';
 import 'package:pet/pages/pet_add.dart';
 import '../controller/data_controller.dart';
-import '../controller/model/users_model.dart';
 
 class DrawerScreen extends StatefulWidget {
   @override

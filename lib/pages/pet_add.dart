@@ -200,7 +200,8 @@ class _PetAddState extends State<PetAdd> {
   Future _handleAddButton(BuildContext context) async {
     if (descriptionController.text.split(' ').length < 20 ||
         descriptionController.text.split(' ').length > 60) {
-      CommonMethod().getXSnackBar("Error", 'Description must contain 20 to 60 words.', red);
+      CommonMethod().getXSnackBar(
+          "Error", 'Description must contain 20 to 60 words.', red);
       return;
     }
     if ((widget.petModel == null && _image == null) ||
@@ -213,34 +214,8 @@ class _PetAddState extends State<PetAdd> {
           .getXSnackBar("Error", "All fields are required.", Colors.red);
       return;
     } else {
-
-      // try {
-        if (widget.petModel != null) {
-          await updateData(
-              petModel: PetModel(
-                  userId: user!.uid,
-                  name: nameController.text ?? '',
-                  price: double.parse(priceController.text).toString(),
-                  age: selectedAge ?? '',
-                  category: selectedCategory ?? '',
-                  description: descriptionController.text ?? '',
-                  favorite: [],
-                  isSold: false,
-                  breed: selectedBreed ?? '',
-                  lifespan: selectedLifespan ?? '',
-                  weight: selectedWeight ?? '',
-                  tax: taxController.text,
-                  priceText: totalPriceController.text,
-                  imageLink: '',
-                  purchaseBy: '',
-                  id: widget.petModel!.id),
-              file: _image ?? null,
-              context: context,
-              networkUrl: widget.petModel != null && _image == null
-                  ? widget.petModel!.imageLink
-                  : null);
-        } else {
-          await saveData(
+      if (widget.petModel != null) {
+        await updateData(
             petModel: PetModel(
                 userId: user!.uid,
                 name: nameController.text ?? '',
@@ -257,11 +232,35 @@ class _PetAddState extends State<PetAdd> {
                 priceText: totalPriceController.text,
                 imageLink: '',
                 purchaseBy: '',
-                id: ''),
-            file: _image!,
+                id: widget.petModel!.id),
+            file: _image ?? null,
             context: context,
-          );
-        }
+            networkUrl: widget.petModel != null && _image == null
+                ? widget.petModel!.imageLink
+                : null);
+      } else {
+        await saveData(
+          petModel: PetModel(
+              userId: user!.uid,
+              name: nameController.text ?? '',
+              price: double.parse(priceController.text).toString(),
+              age: selectedAge ?? '',
+              category: selectedCategory ?? '',
+              description: descriptionController.text ?? '',
+              favorite: [],
+              isSold: false,
+              breed: selectedBreed ?? '',
+              lifespan: selectedLifespan ?? '',
+              weight: selectedWeight ?? '',
+              tax: taxController.text,
+              priceText: totalPriceController.text,
+              imageLink: '',
+              purchaseBy: '',
+              id: ''),
+          file: _image!,
+          context: context,
+        );
+      }
       // } catch (error) {
       //   CommonMethod()
       //       .getXSnackBar("Error", "Failed to add: $error", Colors.red);
@@ -269,7 +268,14 @@ class _PetAddState extends State<PetAdd> {
     }
   }
 
-
+  Future<String> uploadImageToStorage(String childName, Uint8List file) async {
+    Reference ref =
+        _storage.ref().child(childName).child(file.length.toString());
+    UploadTask uploadTask = ref.putData(file);
+    TaskSnapshot snapshot = await uploadTask;
+    String downloadUrl = await snapshot.ref.getDownloadURL();
+    return downloadUrl;
+  }
 
   Future<void> updateData({
     required PetModel petModel,
@@ -285,7 +291,9 @@ class _PetAddState extends State<PetAdd> {
         imageUrl = networkUrl;
         processIndicator.hide(context);
       } else {
-        imageUrl = await controller.uploadImageToStorage('catadd', file!).whenComplete(() {
+        imageUrl = await controller
+            .uploadImageToStorage('catadd', file!)
+            .whenComplete(() {
           processIndicator.hide(context);
         });
       }
@@ -311,8 +319,9 @@ class _PetAddState extends State<PetAdd> {
   }) async {
     try {
       processIndicator.show(context);
-      String imageUrl =
-          await controller.uploadImageToStorage('catadd', file).whenComplete(() {
+      String imageUrl = await controller
+          .uploadImageToStorage('catadd', file)
+          .whenComplete(() {
         processIndicator.hide(context);
       });
       petModel.imageLink = imageUrl;
@@ -451,6 +460,36 @@ class _PetAddState extends State<PetAdd> {
                     onChanged: (String? value) {
                       setState(() {
                         selectedCategory = value;
+                        if (selectedCategory == 'Cat') {
+                          breedList = breedList
+                              .where((breed) => breed.contains('Cat'))
+                              .toList();
+                        } else {
+                          breedList = [
+                            'German shepherd Dog',
+                            'Great Dane Dog',
+                            'Beagles',
+                            'Golden Retriever Dog',
+                            'Pug Dog',
+                            'Pomeranian Dog',
+                            'Shih Tzu Dog',
+                            'Siberian Husky Dog',
+                            'Indies Dog',
+                            'Labrador Dog',
+                            'Cocker Spaniel Dog',
+                            'Rottweiler Dog',
+                            'Boxer Dog',
+                            'Dachshund Dog',
+                            'Doberman Dog',
+                            'Indian Pariah Dog',
+                            'Bulldog',
+                            'Saint Bernard Dog',
+                            'Pitt Bull Dog',
+                            'Border Collie Dog',
+                            'Chihuahua Dog',
+                            'Rhodesian Ridgeback Dog'
+                          ];
+                        }
                       });
                     },
                     items: categories
@@ -467,34 +506,72 @@ class _PetAddState extends State<PetAdd> {
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: DropdownButtonFormField<String>(
-                    value: selectedBreed,
-                    onChanged: (String? value) {
-                      setState(() {
-                        selectedBreed = value;
-                      });
-                    },
-                    items: breedList
-                        .map((breed) => DropdownMenuItem<String>(
-                              value: breed,
-                              child: Text(breed),
-                            ))
-                        .toList(),
-                    decoration: InputDecoration(
-                      labelText: 'Type of Breed',
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10),
+              if (selectedCategory != null && selectedCategory == 'Cat')
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: DropdownButtonFormField<String>(
+                      value: selectedBreed,
+                      onChanged: (String? value) {
+                        setState(() {
+                          selectedBreed = value;
+                        });
+                      },
+                      items: breedList
+                          .where((breed) => breed.contains(breed))
+                          .map((breed) => DropdownMenuItem<String>(
+                                value: breed,
+                                child: Text(breed),
+                              ))
+                          .toList(),
+                      decoration: InputDecoration(
+                        labelText: 'Type of Breed',
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                      ),
                     ),
                   ),
                 ),
-              ),
+              if (selectedCategory != null && selectedCategory == 'Dog')
+
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  // child: Container(
+                  //   decoration: BoxDecoration(
+                  //     border: Border.all(color: Colors.grey),
+                  //     borderRadius: BorderRadius.circular(8.0),
+                  //   ),
+                  child: SizedBox(
+                    height: 50,
+                    width: 440,
+                    child: DropdownButtonFormField<String>(
+                      value: selectedBreed,
+                      onChanged: (String? value) {
+                        setState(() {
+                          selectedBreed = value;
+                        });
+                      },
+                      items: breedList
+                          .map((breed) => DropdownMenuItem<String>(
+                                value: breed,
+                                child: Text(breed),
+                              ))
+                          .toList(),
+                      decoration: InputDecoration(
+                        labelText: 'Type of Breed',
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                      ),
+                    ),
+                  ),
+                ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(

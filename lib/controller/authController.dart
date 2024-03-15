@@ -222,8 +222,8 @@ class AuthController extends GetxController {
   // Sign out
   Future<void> signOut() async {
     try {
-      await _auth.signOut();
-      Get.offAll(()=>LoginScreen());
+      await _auth.signOut().whenComplete(() =>
+      Get.offAll(()=>LoginScreen()));
     } catch (e) {
       CommonMethod().getXSnackBar("Error", 'Error signing out: $e', red);
     }
