@@ -5,11 +5,13 @@ class UserModel {
   final String? name;
   final String email;
   final String? phone;
-  final String password;
-  final String confirmpassword;
+  final String? imageUrl;
+  final String? password;
+  final String? confirmpassword;
 
   const UserModel({
     required this.id,
+    required this.imageUrl,
     required this.name,
     required this.email,
     required this.phone,
@@ -22,6 +24,7 @@ class UserModel {
     return UserModel(
       id: snapshot.id,
       name: data['Name'],
+      imageUrl: data['imageUrl'],
       email: data['Email'],
       phone: data['Phone'],
       password: data['Password'],
@@ -30,12 +33,26 @@ class UserModel {
   }
 
   toJson() {
-    return {
+    Map<String, dynamic> json = {
+      "id": id,
       "Name": name,
       "Email": email,
+      "imageUrl": imageUrl,
+      "Password": password,
       "Phone": phone,
       "Password": password,
       "Confirm Password": confirmpassword,
     };
+
+    // Add phone only if it's not null
+    if (phone != null) {
+      json["Phone"] = phone;
+    }
+
+    // Filter out null values
+    json.removeWhere((key, value) => value == null);
+
+    return json;
   }
+
 }

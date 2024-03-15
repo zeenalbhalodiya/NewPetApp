@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:pet/components/colors.dart';
+import 'package:pet/components/common_methos.dart';
 import 'package:pet/controller/model/users_model.dart';
 import 'model/pet_model.dart';
 
@@ -19,7 +21,8 @@ RxList paymentTransferList = [].obs;
 RxList upiTransferList = [].obs;
 RxList soldIdList = [].obs;
   String adminEmail = "petapplication2@gmail.com";
-
+  Rx<UserModel?> currentUser = Rx<UserModel?>(null);
+// UserModel? currentUserModel;
 TextEditingController searchTextController = TextEditingController();
 
   Future getTransferHistory() async {
@@ -47,18 +50,21 @@ TextEditingController searchTextController = TextEditingController();
 
   Future<UserModel> getUserModel(String userId) async {
     UserModel userModel = UserModel(
-      name: '',
-      email: '',
-      phone: '',
-      password: '',
-      confirmpassword: '', id: '',
+        name: '',
+        email: '',
+        phone: '',
+        password: '',
+        confirmpassword: '', id: '',
+        imageUrl: ''
     );
-
     try {
       var snapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
       if (snapshot.exists) {
         userModel = UserModel.fromDocumentSnapshot(snapshot);
-        print(userModel.name); // Accessing user's name
+        if(userModel.id == user!.uid){
+          currentUser.value = userModel;
+          update();
+        }
       } else {
         print('User not found');
       }
@@ -66,10 +72,18 @@ TextEditingController searchTextController = TextEditingController();
       print('Error: $e');
       // Handle error accordingly
     }
-log('--------userModel------${userModel.toJson()}');
-log('--------userId------${userId}');
-log('--------user------${user.toString()}');
+
     return userModel;
+  }
+
+
+  Future<String> uploadImageToStorage(String childName, Uint8List file) async {
+    Reference ref =
+    _storage.ref().child(childName).child(file.length.toString());
+    UploadTask uploadTask = ref.putData(file);
+    TaskSnapshot snapshot = await uploadTask;
+    String downloadUrl = await snapshot.ref.getDownloadURL();
+    return downloadUrl;
   }
 
 
@@ -90,13 +104,13 @@ log('--------user------${user.toString()}');
     fetchPetDataFromFirestore();
   }
 
-  Future<String> uploadImageToStorage(String childName, Uint8List file) async{
-    Reference ref = _storage.ref().child(childName).child(file.length.toString());
-    UploadTask uploadTask = ref.putData(file);
-    TaskSnapshot snapshot = await uploadTask;
-    String downloadUrl = await snapshot.ref.getDownloadURL();
-    return downloadUrl;
-  }
+  // Future<String> uploadImageToStorage(String childName, Uint8List file) async{
+  //   Reference ref = _storage.ref().child(childName).child(file.length.toString());
+  //   UploadTask uploadTask = ref.putData(file);
+  //   TaskSnapshot snapshot = await uploadTask;
+  //   String downloadUrl = await snapshot.ref.getDownloadURL();
+  //   return downloadUrl;
+  // }
 
   Future<void> saveData({required PetModel petModel,required Uint8List file}) async {
     try {
@@ -143,6 +157,7 @@ log('--------user------${user.toString()}');
   }
 
   Future<List<PetModel>> fetchPetDataFromFirestore() async {
+    log("----isAdmin--->> ${user!.email == adminEmail}");
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('catadd').get();
     List<PetModel> petList = querySnapshot.docs.map((doc) {
       return PetModel.fromJson({
@@ -216,6 +231,26 @@ log('--------user------${user.toString()}');
       return false;
     }
   }
+
+
+  Future<void> updateUser({
+    required UserModel user,
+  }) async {
+    try {
+      await FirebaseFirestore.instance.collection("users").doc(user.id).update(user.toJson());
+      Get.back();
+      CommonMethod().getXSnackBar("Success", "Profile Update Successfully", success);
+      // Optionally, you can handle success feedback here.
+    } catch (error) {
+      CommonMethod().getXSnackBar("Error", error.toString(), success);
+
+      // Optionally, you can handle error feedback here.
+    }
+  }
+
+
+
+
 // Future<void> updatePetDataInFirestore(String petId, PetModel updatedData, String userId) async {
 //   log("-----updatePetDataInFirestore----");
 //   try {

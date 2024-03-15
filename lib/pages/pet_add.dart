@@ -200,12 +200,9 @@ class _PetAddState extends State<PetAdd> {
   Future _handleAddButton(BuildContext context) async {
     if (descriptionController.text.split(' ').length < 20 ||
         descriptionController.text.split(' ').length > 60) {
-
       CommonMethod().getXSnackBar("Error", 'Description must contain 20 to 60 words.', red);
       return;
     }
-
-
     if ((widget.petModel == null && _image == null) ||
         nameController.text.isEmpty ||
         selectedAge == null ||
@@ -272,14 +269,7 @@ class _PetAddState extends State<PetAdd> {
     }
   }
 
-  Future<String> uploadImageToStorage(String childName, Uint8List file) async {
-    Reference ref =
-        _storage.ref().child(childName).child(file.length.toString());
-    UploadTask uploadTask = ref.putData(file);
-    TaskSnapshot snapshot = await uploadTask;
-    String downloadUrl = await snapshot.ref.getDownloadURL();
-    return downloadUrl;
-  }
+
 
   Future<void> updateData({
     required PetModel petModel,
@@ -295,7 +285,7 @@ class _PetAddState extends State<PetAdd> {
         imageUrl = networkUrl;
         processIndicator.hide(context);
       } else {
-        imageUrl = await uploadImageToStorage('catadd', file!).whenComplete(() {
+        imageUrl = await controller.uploadImageToStorage('catadd', file!).whenComplete(() {
           processIndicator.hide(context);
         });
       }
@@ -322,7 +312,7 @@ class _PetAddState extends State<PetAdd> {
     try {
       processIndicator.show(context);
       String imageUrl =
-          await uploadImageToStorage('catadd', file).whenComplete(() {
+          await controller.uploadImageToStorage('catadd', file).whenComplete(() {
         processIndicator.hide(context);
       });
       petModel.imageLink = imageUrl;

@@ -94,6 +94,7 @@ class AuthController extends GetxController {
       // Save user details to Firestore
       await saveUserDetails(UserModel(
         id: user.uid,
+        imageUrl: null,
         email: user.email!,
         password: passwordController.text,
         confirmpassword: confirmPasswordController.text,

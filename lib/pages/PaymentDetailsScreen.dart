@@ -32,13 +32,12 @@ class _PaymentDetailsScreenState extends State<PaymentDetailsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-
-        title: Text('Payment Details', style: TextStyle(color: Colors.white)),
+iconTheme: IconThemeData(color: primaryWhite),
+        title: Text('Payment Details', style: AppTextStyle.homeAppbarTextStyle),
         backgroundColor: appColor,
       ),
       body: ListView(
         children: [
-
           Padding(
             padding: const EdgeInsets.all(15),
             child: Text("Card Transaction",style: AppTextStyle.normalBold18),

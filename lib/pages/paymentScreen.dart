@@ -5,7 +5,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:pet/app.dart';
 import 'package:pet/components/colors.dart';
+import 'package:pet/components/common_methos.dart';
+import 'package:pet/pages/main_home_page.dart';
+import 'package:pet/pages/payment_success_dialog.dart';
 import 'dart:core';
+import '../components/app_text_style.dart';
+import '../components/buttons/text_button.dart';
+import '../components/static_decoration.dart';
 import '../controller/data_controller.dart';
 import '../controller/model/pet_model.dart';
 import 'PaymentDetailsScreen.dart';
@@ -31,7 +37,7 @@ class _PaymentScreenState extends State<paymentScreen> {
   User? user = FirebaseAuth.instance.currentUser;
 
   bool isVerifyButtonEnabled = false;
-  bool isLoading = false;
+  // bool isLoading = false;
 
   CollectionReference payments =
   FirebaseFirestore.instance.collection('payments');
@@ -115,18 +121,13 @@ class _PaymentScreenState extends State<paymentScreen> {
           selectedMonth = null;
           selectedYear = null;
         });
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => PaymentDetailsScreen()),
-        );
+
+        CommonMethod().getXSnackBar("Success", "Payment Successfully done", success);
+
+        Get.off(()=>HomePage())!.then((value) => openAlertBox());
+
       }).catchError((error) {
-        print("Failed to save payment details: $error");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to save payment details: $error'),
-            backgroundColor: Colors.red,
-          ),
-        );
+         CommonMethod().getXSnackBar("Error","Failed to save payment details: $error",red);
       });
 
     } else {
@@ -142,19 +143,10 @@ class _PaymentScreenState extends State<paymentScreen> {
 
         // Show success message
         upiIdController.clear();
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => PaymentDetailsScreen(),
-        ));
+        CommonMethod().getXSnackBar("Success", "Payment Successfully done", success);
+        Get.off(()=>HomePage())!.then((value) => openAlertBox());
       }).catchError((error) {
-        print("Failed to save UPI ID: $error");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to save UPI ID: $error'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        CommonMethod().getXSnackBar("Error","Failed to save UPI ID: $error",red);
       });
     }
 
@@ -166,6 +158,59 @@ class _PaymentScreenState extends State<paymentScreen> {
     controller.fetchPetDataFromFirestore();
 
   }
+
+
+  openAlertBox() {
+    Get.dialog(
+      AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(32.0)),
+        ),
+        contentPadding: EdgeInsets.only(top: 10.0),
+        content: Container(
+          width: 300.0,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    "Payment Successful!",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 20.0),
+                  Icon(
+                    Icons.verified,
+                    color: Colors.green,
+                    size: 100,
+                  ),
+                  SizedBox(height: 20.0),
+                  Padding(
+                    padding: const EdgeInsets.all(30),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Get.back();
+                      },
+                      child: Text("Done"),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+
+
+
   @override
   void initState() {
     super.initState();
@@ -196,36 +241,14 @@ class _PaymentScreenState extends State<paymentScreen> {
     return formatted;
   }
   void verifyUPIID() {
-    setState(() {
-      isLoading = true;
-    });
-
-
-
-    Future.delayed(Duration(seconds: 2), () {
-      setState(() {
-        isLoading = false;
-      });
-
       String upiId = upiIdController.text;
-
       savePaymentDetails(
           upiId,
           cardNumberController.text,
           cardholderNameController.text,
           selectedMonth ?? getCurrentMonth(),
           selectedYear ?? getCurrentYear(),
-          cvvController.text,pet)
-          .then((_) {
-        print("Payment details saved");
-      }).catchError((error) => print("Failed to save payment details: $error"));
-      Future.delayed(Duration(seconds: 1), () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => PaymentDetailsScreen()),
-        ).then((value) {});
-      });
-    });
+          cvvController.text,pet);
   }
 
   @override
@@ -373,19 +396,12 @@ class _PaymentScreenState extends State<paymentScreen> {
                                         expiryMonth.isEmpty ||
                                         expiryYear.isEmpty ||
                                         cvv.isEmpty) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                              'Please fill all the fields.'),
-                                          backgroundColor: Colors.red,
-                                        ),
-                                      );
+
+                                      CommonMethod().getXSnackBar("Error", 'Please fill all the fields.', red);
+
                                       return;
                                     }
-                                    setState(() {
-                                      isLoading = true;
-                                    });
+
                                     savePaymentDetails(
                                       upiIdController.text,
                                       cardNumberController.text,
@@ -394,38 +410,13 @@ class _PaymentScreenState extends State<paymentScreen> {
                                       selectedYear!,
                                       cvvController.text,
                                         pet
-                                    ).then((_) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                              'Payment details saved successfully'),
-                                        ),
-                                      );
-                                    }).catchError((error) {
-                                      print(
-                                          "Failed to save payment details: $error");
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                              'Failed to save payment details: $error'),
-                                          backgroundColor: Colors.red,
-                                        ),
-                                      );
-                                    }).whenComplete(() {
-                                      setState(() {
-                                        isLoading = false;
-                                      });
-                                    });
+                                    );
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 10.0),
                                     child: Center(
-                                      child: isLoading
-                                          ? CircularProgressIndicator()
-                                          : Text(
+                                      child: Text(
                                         'Pay Now',
                                         style: TextStyle(
                                           fontSize: 17.0,
@@ -467,10 +458,10 @@ class _PaymentScreenState extends State<paymentScreen> {
                                       ),
                                     ),
                                     SizedBox(height: 20),
-                                    if (isLoading)
-                                      Center(
-                                        child: CircularProgressIndicator(),
-                                      ),
+                                    // if (isLoading)
+                                    //   Center(
+                                    //     child: CircularProgressIndicator(),
+                                    //   ),
                                     ElevatedButton(
                                       onPressed: isVerifyButtonEnabled
                                           ? () {

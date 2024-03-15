@@ -1,11 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:pet/components/app_text_style.dart';
+import 'package:pet/components/buttons/text_button.dart';
 import 'package:pet/components/common_methos.dart';
+import 'package:pet/components/static_decoration.dart';
 import 'package:pet/controller/data_controller.dart';
+import 'package:pet/pages/payment_success_dialog.dart';
 import 'package:pet/pages/pet_descreption.dart';
 import 'package:pet/pages/pet_add.dart';
 import '../components/colors.dart';
@@ -30,7 +34,19 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    saveUserId();
+    controller.getUserModel(user!.uid);
     controller.fetchPetDataFromFirestore();
+  }
+
+  Future saveUserId() async {
+    if (user != null) {
+      await FirebaseFirestore.instance.collection("users")
+          .doc(user!.uid)
+          .update({
+        'id': user!.uid
+      });
+    }
   }
 
   @override
@@ -40,9 +56,9 @@ class _HomeScreenState extends State<HomeScreen> {
         AnimatedContainer(
           decoration: isDrawerOpen
               ? BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(25),
-                )
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(25),
+          )
               : BoxDecoration(color: Colors.white),
           transform: Matrix4.translationValues(xOffset, yOffset, 0)
             ..scale(scaleFactor),
@@ -60,27 +76,27 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       isDrawerOpen
                           ? IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  xOffset = 0;
-                                  yOffset = 0;
-                                  scaleFactor = 1;
-                                  isDrawerOpen = false;
-                                });
-                              },
-                              icon: Icon(Icons.arrow_back_ios),
-                            )
+                        onPressed: () {
+                          setState(() {
+                            xOffset = 0;
+                            yOffset = 0;
+                            scaleFactor = 1;
+                            isDrawerOpen = false;
+                          });
+                        },
+                        icon: Icon(Icons.arrow_back_ios),
+                      )
                           : IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  xOffset = 230;
-                                  yOffset = 150;
-                                  scaleFactor = 0.6;
-                                  isDrawerOpen = true;
-                                });
-                              },
-                              icon: Icon(Icons.menu),
-                            ),
+                        onPressed: () {
+                          setState(() {
+                            xOffset = 230;
+                            yOffset = 150;
+                            scaleFactor = 0.6;
+                            isDrawerOpen = true;
+                          });
+                        },
+                        icon: Icon(Icons.menu),
+                      ),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -106,21 +122,26 @@ class _HomeScreenState extends State<HomeScreen> {
                           )
                         ],
                       ),
+
                       Container(
                         margin: EdgeInsets.only(right: 10.0),
                         child: GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ProfileScreen()),
-                            );
+                            Get.to(() => ProfileScreen());
                           },
-                          child: CircleAvatar(
-                            backgroundImage: AssetImage('images/pet_cat.png'),
-                          ),
+                          child:
+                          Obx(() =>
+                              CircleAvatar(
+                                backgroundImage: controller.currentUser !=
+                                    null &&
+                                    controller.currentUser.value!.imageUrl !=
+                                        null
+                                    ? NetworkImage(
+                                    controller.currentUser.value!.imageUrl!)
+                                    : null,
+                              )),
                         ),
-                      ),
+                      )
                     ],
                   ),
                 ),
@@ -153,7 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               contentPadding: EdgeInsets.symmetric(vertical: 0),
                               enabledBorder: OutlineInputBorder(
                                 borderSide:
-                                    BorderSide(color: Colors.transparent),
+                                BorderSide(color: Colors.transparent),
                                 borderRadius: BorderRadius.circular(15),
                               ),
                               focusedBorder: OutlineInputBorder(
@@ -190,26 +211,27 @@ class _HomeScreenState extends State<HomeScreen> {
                               onTap: () {
                                 controller.fetchPetDataFromFirestore();
                                 controller.selectedCategoryName.value =
-                                    e['name'];
+                                e['name'];
                               },
                               child: Container(
                                 padding: EdgeInsets.symmetric(horizontal: 15),
                                 child: Column(
                                   children: [
-                                    Obx(() => Container(
+                                    Obx(() =>
+                                        Container(
                                           padding: EdgeInsets.all(07),
                                           decoration: BoxDecoration(
                                             color: Colors.white,
                                             border: Border.all(
                                                 color: controller
-                                                            .selectedCategoryName
-                                                            .value ==
-                                                        e['name']
+                                                    .selectedCategoryName
+                                                    .value ==
+                                                    e['name']
                                                     ? success
                                                     : Colors.transparent,
                                                 width: 2),
                                             borderRadius:
-                                                BorderRadius.circular(20),
+                                            BorderRadius.circular(20),
                                             boxShadow: shadowList,
                                           ),
                                           child: Image(
@@ -253,397 +275,458 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             child: Column(
                               children: [
-                                Obx(() => controller.petDataList.isEmpty
+                                Obx(() =>
+                                controller.petDataList.isEmpty
                                     ? SizedBox(
-                                        height: Get.height,
-                                      )
+                                  height: Get.height,
+                                )
                                     : SizedBox(
-                                        height:
-                                            controller.petDataList.length <= 2
-                                                ? Get.height
-                                                : null,
-                                        child: ListView.builder(
-                                          physics: ScrollPhysics(),
-                                          itemCount:
-                                              controller.petDataList.length,
-                                          scrollDirection: Axis.vertical,
-                                          shrinkWrap: true,
-                                          itemBuilder: (context, index) {
-                                            //database
-                                            return GestureDetector(
-                                              onTap: () {
-                                                if (controller
-                                                        .petDataList[index]
-                                                        .isSold ==
-                                                    true) {
-                                                  CommonMethod().getXSnackBar(
-                                                      "Error",
-                                                      "Sorry,This Pet is sold",
-                                                      red);
-                                                } else {
-                                                  if (user!.email ==
-                                                      controller.adminEmail) {
-                                                  } else {
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                DescriptionScreen(
-                                                                  pet: controller
+                                  height:
+                                  controller.petDataList.length <= 2
+                                      ? Get.height
+                                      : null,
+                                  child: ListView.builder(
+                                    physics: ScrollPhysics(),
+                                    itemCount:
+                                    controller.petDataList.length,
+                                    scrollDirection: Axis.vertical,
+                                    shrinkWrap: true,
+                                    itemBuilder: (context, index) {
+                                      //database
+                                      return GestureDetector(
+                                        onTap: () {
+                                          if (controller
+                                              .petDataList[index]
+                                              .isSold ==
+                                              true) {
+                                            CommonMethod().getXSnackBar(
+                                                "Error",
+                                                "Sorry,This Pet is sold",
+                                                red);
+                                          } else {
+                                            if (user!.email ==
+                                                controller.adminEmail) {} else {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          DescriptionScreen(
+                                                            pet: controller
+                                                                .petDataList[
+                                                            index],
+                                                          ))).then(
+                                                      (value) {
+                                                    controller
+                                                        .favoritePetDataList();
+                                                    setState(() {});
+                                                  });
+                                            }
+                                          }
+                                        },
+                                        child: Stack(
+                                          children: [
+                                            Container(
+                                              // height: 205,
+
+                                              margin: EdgeInsets.symmetric(
+                                                  horizontal: 20),
+                                              child: Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: Stack(
+                                                      children: [
+                                                        Container(
+                                                          height: 180.sp,
+                                                          decoration:
+                                                          BoxDecoration(
+                                                            color: (index %
+                                                                2 ==
+                                                                0)
+                                                                ? Colors
+                                                                .blueGrey[
+                                                            200]
+                                                                : Colors
+                                                                .orangeAccent[
+                                                            200],
+                                                            borderRadius:
+                                                            BorderRadius
+                                                                .circular(
+                                                                30),
+                                                            boxShadow:
+                                                            shadowList,
+                                                            //database
+                                                            image:
+                                                            DecorationImage(
+                                                              image: NetworkImage(
+                                                                  controller
+                                                                      .petDataList[
+                                                                  index]
+                                                                      .imageLink
+                                                                      .toString()),
+                                                              fit: BoxFit
+                                                                  .cover,
+                                                            ),
+                                                          ),
+                                                          margin:
+                                                          EdgeInsets.only(
+                                                              top: 35),
+                                                        ),
+
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    child: Container(
+
+                                                      margin: EdgeInsets.only(
+                                                          top: 63,
+                                                          bottom: 20),
+                                                      padding:
+                                                      EdgeInsets.all(15),
+                                                      decoration:
+                                                      BoxDecoration(
+                                                        color:
+                                                        controller
+                                                            .petDataList[
+
+                                                        index]
+                                                            .isSold ==
+                                                            true
+                                                            ?
+                                                        grey.withOpacity(.5)
+                                                            : primaryWhite,
+                                                        borderRadius:
+                                                        BorderRadius.only(
+                                                            topRight: Radius
+                                                                .circular(
+                                                                50),
+                                                            bottomRight:
+                                                            Radius.circular(
+                                                                20)),
+                                                        boxShadow: shadowList,
+                                                      ),
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceAround,
+                                                        crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                        children: [
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                            children: [
+                                                              Text(
+                                                                controller
+                                                                    .petDataList[
+                                                                index]
+                                                                    .name
+                                                                    .toString(),
+                                                                style:
+                                                                TextStyle(
+                                                                  fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                                  fontSize:
+                                                                  20.0,
+                                                                  color: Colors
+                                                                      .grey[
+                                                                  600],
+                                                                ),
+                                                              ),
+                                                              // (catMapList[index]['sex'] == 'male') ? Icon(
+                                                              //   Icons.male_rounded,
+                                                              //   color: Colors.grey[500],
+                                                              // ) :
+                                                              // Icon(
+                                                              //   Icons.female_rounded,
+                                                              //   color: Colors.grey[500],
+                                                              // ),
+                                                              GestureDetector(
+                                                                onTap: () {
+                                                                  controller
+                                                                      .updatePetDataInFirestore(
+                                                                      controller
+                                                                          .petDataList[
+                                                                      index]
+                                                                          .id
+                                                                          .toString(),
+                                                                      controller
                                                                           .petDataList[
                                                                       index],
-                                                                ))).then(
-                                                        (value) {
-                                                      controller
-                                                          .favoritePetDataList();
-                                                      setState(() {});
-                                                    });
-                                                  }
-                                                }
-                                              },
-                                              child: Container(
-                                                // height: 205,
-                                                margin: EdgeInsets.symmetric(
-                                                    horizontal: 20),
-                                                child: Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: Stack(
-                                                        children: [
-                                                          Container(
-                                                            height: 180.sp,
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              color: (index %
-                                                                          2 ==
-                                                                      0)
-                                                                  ? Colors.blueGrey[
-                                                                      200]
-                                                                  : Colors.orangeAccent[
-                                                                      200],
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          30),
-                                                              boxShadow:
-                                                                  shadowList,
-                                                              //database
-                                                              image:
-                                                                  DecorationImage(
-                                                                image: NetworkImage(controller
-                                                                    .petDataList[
+                                                                      user!
+                                                                          .uid);
+                                                                  setState(
+                                                                          () {});
+                                                                },
+                                                                child:
+                                                                FutureBuilder<
+                                                                    bool>(
+                                                                  future: controller
+                                                                      .isUserIdInFavorite(
+                                                                      controller
+                                                                          .petDataList[
+                                                                      index]
+                                                                          .id
+                                                                          .toString(),
+                                                                      user!
+                                                                          .uid
+                                                                          .toString()),
+                                                                  builder:
+                                                                      (context,
+                                                                      snapshot) {
+                                                                    return snapshot
+                                                                        .data !=
+                                                                        null &&
+                                                                        snapshot
+                                                                            .data!
+                                                                        ? Icon(
+                                                                        Icons
+                                                                            .favorite,
+                                                                        color: Colors
+                                                                            .redAccent)
+                                                                        : SizedBox();
+                                                                  },
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          if (controller
+                                                              .petDataList[
+                                                          index]
+                                                              .breed !=
+                                                              null)
+                                                            Padding(
+                                                              padding:
+                                                              const EdgeInsets
+                                                                  .only(
+                                                                  bottom:
+                                                                  8.0),
+                                                              child: Row(
+                                                                crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                                children: [
+                                                                  // Text('Breed :',style: TextStyle(
+                                                                  //   fontWeight: FontWeight.bold,
+                                                                  //   color: Colors.grey[500],
+                                                                  // ),),
+                                                                  Expanded(
+                                                                    child: Text(
+                                                                        controller
+                                                                            .petDataList[
                                                                         index]
-                                                                    .imageLink
-                                                                    .toString()),
-                                                                fit: BoxFit
-                                                                    .cover,
+                                                                            .breed
+                                                                            .toString(),
+                                                                        style: AppTextStyle
+                                                                            .normalRegular14
+                                                                            .copyWith(
+                                                                            color: hintGrey,
+                                                                            overflow: TextOverflow
+                                                                                .clip)),
+                                                                  ),
+                                                                ],
                                                               ),
                                                             ),
-                                                            margin:
-                                                                EdgeInsets.only(
-                                                                    top: 35),
-                                                          ),
-                                                          Obx(() => controller
-                                                                      .petDataList[
-                                                                          index]
-                                                                      .isSold ==
-                                                                  true
-                                                              ? Positioned(
-                                                                  top: 16,
-                                                                  child:
-                                                                      Container(
-                                                                          decoration: BoxDecoration(
-                                                                              color: Colors.redAccent,
-                                                                              borderRadius: BorderRadius.circular(10)),
-                                                                          child: Padding(
-                                                                            padding:
-                                                                                const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                                                                            child:
-                                                                                Text(
-                                                                              "Sold",
-                                                                              style: AppTextStyle.regularBold.copyWith(color: primaryWhite),
-                                                                            ),
-                                                                          )),
-                                                                )
-                                                              : SizedBox())
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      child: Container(
-                                                        margin: EdgeInsets.only(
-                                                            top: 63,
-                                                            bottom: 20),
-                                                        padding:
-                                                            EdgeInsets.all(15),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: Colors.white,
-                                                          borderRadius:
-                                                              BorderRadius.only(
-                                                                  topRight: Radius
-                                                                      .circular(
-                                                                          50),
-                                                                  bottomRight:
-                                                                      Radius.circular(
-                                                                          20)),
-                                                          boxShadow: shadowList,
-                                                        ),
-                                                        child: Column(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceAround,
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
+                                                          if (controller
+                                                              .petDataList[
+                                                          index]
+                                                              .priceText !=
+                                                              null &&
+                                                              user!.email !=
+                                                                  controller
+                                                                      .adminEmail)
                                                             Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .spaceBetween,
                                                               children: [
+                                                                Text(
+                                                                  'Price : ',
+                                                                  style:
+                                                                  TextStyle(
+                                                                    fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                    color: Colors
+                                                                        .grey[
+                                                                    500],
+                                                                  ),
+                                                                ),
                                                                 Text(
                                                                   controller
                                                                       .petDataList[
-                                                                          index]
-                                                                      .name
+                                                                  index]
+                                                                      .priceText
                                                                       .toString(),
                                                                   style:
-                                                                      TextStyle(
+                                                                  TextStyle(
                                                                     fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                    fontSize:
-                                                                        20.0,
+                                                                    FontWeight
+                                                                        .bold,
                                                                     color: Colors
-                                                                            .grey[
-                                                                        600],
-                                                                  ),
-                                                                ),
-                                                                // (catMapList[index]['sex'] == 'male') ? Icon(
-                                                                //   Icons.male_rounded,
-                                                                //   color: Colors.grey[500],
-                                                                // ) :
-                                                                // Icon(
-                                                                //   Icons.female_rounded,
-                                                                //   color: Colors.grey[500],
-                                                                // ),
-                                                                GestureDetector(
-                                                                  onTap: () {
-                                                                    controller.updatePetDataInFirestore(
-                                                                        controller
-                                                                            .petDataList[
-                                                                                index]
-                                                                            .id
-                                                                            .toString(),
-                                                                        controller.petDataList[
-                                                                            index],
-                                                                        user!
-                                                                            .uid);
-                                                                    setState(
-                                                                        () {});
-                                                                  },
-                                                                  child:
-                                                                      FutureBuilder<
-                                                                          bool>(
-                                                                    future: controller.isUserIdInFavorite(
-                                                                        controller
-                                                                            .petDataList[
-                                                                                index]
-                                                                            .id
-                                                                            .toString(),
-                                                                        user!
-                                                                            .uid
-                                                                            .toString()),
-                                                                    builder:
-                                                                        (context,
-                                                                            snapshot) {
-                                                                      return snapshot.data != null &&
-                                                                              snapshot
-                                                                                  .data!
-                                                                          ? Icon(
-                                                                              Icons.favorite,
-                                                                              color: Colors.redAccent)
-                                                                          : SizedBox();
-                                                                    },
+                                                                        .green[
+                                                                    500],
                                                                   ),
                                                                 ),
                                                               ],
                                                             ),
-                                                            if (controller
-                                                                    .petDataList[
-                                                                        index]
-                                                                    .breed !=
-                                                                null)
-                                                              Padding(
-                                                                padding:
-                                                                    const EdgeInsets
-                                                                        .only(
-                                                                        bottom:
-                                                                            8.0),
-                                                                child: Row(
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
+                                                          if (user!.email ==
+                                                              controller
+                                                                  .adminEmail)
+                                                            Column(
+                                                              children: [
+                                                                Row(
                                                                   children: [
-                                                                    // Text('Breed :',style: TextStyle(
+                                                                    // Text('Profit : ',   style: TextStyle(
                                                                     //   fontWeight: FontWeight.bold,
                                                                     //   color: Colors.grey[500],
                                                                     // ),),
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                          controller
-                                                                              .petDataList[
-                                                                                  index]
-                                                                              .breed
-                                                                              .toString(),
-                                                                          style: AppTextStyle.normalRegular14.copyWith(
-                                                                              color: hintGrey,
-                                                                              overflow: TextOverflow.clip)),
+                                                                    Text(
+                                                                      '${controller
+                                                                          .petDataList[index]
+                                                                          .tax ??
+                                                                          "0"}',
+                                                                      style:
+                                                                      TextStyle(
+                                                                        fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                        color:
+                                                                        Colors
+                                                                            .green[500],
+                                                                      ),
                                                                     ),
                                                                   ],
                                                                 ),
-                                                              ),
-                                                            if (controller
-                                                                        .petDataList[
-                                                                            index]
-                                                                        .priceText !=
-                                                                    null &&
-                                                                user!.email !=
-                                                                    controller
-                                                                        .adminEmail)
-                                                              Row(
-                                                                children: [
-                                                                  Text(
-                                                                    'Price : ',
-                                                                    style:
-                                                                        TextStyle(
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                      color: Colors
-                                                                              .grey[
-                                                                          500],
-                                                                    ),
+                                                                if (controller
+                                                                    .petDataList[
+                                                                index]
+                                                                    .purchaseBy !=
+                                                                    null)
+                                                                  FutureBuilder<
+                                                                      UserModel>(
+                                                                    future: controller
+                                                                        .getUserModel(
+                                                                        controller
+                                                                            .petDataList[
+                                                                        index]
+                                                                            .purchaseBy!),
+                                                                    builder:
+                                                                        (
+                                                                        context,
+                                                                        snapshot) {
+                                                                      if (snapshot
+                                                                          .connectionState ==
+                                                                          ConnectionState
+                                                                              .waiting) {
+                                                                        // While data is loading
+                                                                        return CircularProgressIndicator();
+                                                                      } else
+                                                                      if (snapshot
+                                                                          .hasError) {
+                                                                        // If an error occurred
+                                                                        return Text(
+                                                                            'Error: ${snapshot
+                                                                                .error}');
+                                                                      } else {
+                                                                        // If data is successfully loaded
+                                                                        final userModel =
+                                                                            snapshot
+                                                                                .data;
+                                                                        // Use the userModel object as needed
+                                                                        return Text(
+                                                                            'User Name: ${userModel!
+                                                                                .name}');
+                                                                      }
+                                                                    },
                                                                   ),
-                                                                  Text(
-                                                                    controller
-                                                                        .petDataList[
-                                                                            index]
-                                                                        .priceText
-                                                                        .toString(),
-                                                                    style:
-                                                                        TextStyle(
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                      color: Colors
-                                                                              .green[
-                                                                          500],
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            if (user!.email ==
-                                                                controller
-                                                                    .adminEmail)
-                                                              Column(
-                                                                children: [
-                                                                  Row(
-                                                                    children: [
-                                                                      // Text('Profit : ',   style: TextStyle(
-                                                                      //   fontWeight: FontWeight.bold,
-                                                                      //   color: Colors.grey[500],
-                                                                      // ),),
-                                                                      Text(
-                                                                        '${controller.petDataList[index].tax ?? "0"}',
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                          color:
-                                                                              Colors.green[500],
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                  if (controller
-                                                                          .petDataList[
-                                                                              index]
-                                                                          .purchaseBy !=
-                                                                      null)
-                                                                    FutureBuilder<
-                                                                        UserModel>(
-                                                                      future: controller.getUserModel(controller
-                                                                          .petDataList[
-                                                                              index]
-                                                                          .purchaseBy!),
-                                                                      builder:
-                                                                          (context,
-                                                                              snapshot) {
-                                                                        if (snapshot.connectionState ==
-                                                                            ConnectionState
-                                                                                .waiting) {
-                                                                          // While data is loading
-                                                                          return CircularProgressIndicator();
-                                                                        } else if (snapshot
-                                                                            .hasError) {
-                                                                          // If an error occurred
-                                                                          return Text(
-                                                                              'Error: ${snapshot.error}');
-                                                                        } else {
-                                                                          // If data is successfully loaded
-                                                                          final userModel =
-                                                                              snapshot.data;
-                                                                          // Use the userModel object as needed
-                                                                          return Text(
-                                                                              'User Name: ${userModel!.name}');
-                                                                        }
-                                                                      },
-                                                                    ),
-                                                                ],
-                                                              ),
-                                                            Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .start,
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .center,
-                                                              children: [
-                                                                GestureDetector(
-                                                                  onTap:(){
-                                                                    Get.to(PetAdd(petModel: controller.petDataList.value[index],));
-                                                                  },
-                                                                  child: Obx(
-                                                                    () => controller
-                                                                                .petDataList[index]
-                                                                                .userId ==
-                                                                            user!.uid
-                                                                        ? Icon(
-                                                                            Icons
-                                                                                .edit,
-                                                                            color:
-                                                                                appColor,
-                                                                            size:
-                                                                                18,
-                                                                          )
-                                                                        : SizedBox(),
-                                                                  ),
-                                                                ),
                                                               ],
-                                                            )
-                                                          ],
-                                                        ),
+                                                            ),
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                            crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                            children: [
+                                                              GestureDetector(
+                                                                onTap: () {
+                                                                  Get.to(()=>PetAdd(
+                                                                    petModel: controller
+                                                                        .petDataList
+                                                                        .value[index],));
+                                                                },
+                                                                child: Obx(
+                                                                      () =>
+                                                                  controller
+                                                                      .petDataList[index]
+                                                                      .userId ==
+                                                                      user!.uid
+                                                                      ? Icon(
+                                                                    Icons
+                                                                        .edit,
+                                                                    color:
+                                                                    appColor,
+                                                                    size:
+                                                                    18,
+                                                                  )
+                                                                      : SizedBox(),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          )
+                                                        ],
                                                       ),
-                                                    )
-                                                  ],
-                                                ),
+                                                    ),
+                                                  )
+                                                ],
                                               ),
-                                            );
-                                          },
+                                            ),
+
+                                            Positioned(
+                                              bottom: 0,
+                                              top: 20,
+                                              left: 0,
+                                              right: 0,
+
+                                              child: Obx(() =>
+                                              controller
+                                                  .petDataList[
+                                              index]
+                                                  .isSold ==
+                                                  true
+                                                  ? Center(
+                                                child: Container(
+                                                    decoration: BoxDecoration(
+                                                        color: Colors.redAccent,
+                                                        borderRadius: BorderRadius
+                                                            .circular(10)),
+                                                    child: Padding(
+                                                      padding:
+                                                      const EdgeInsets
+                                                          .symmetric(
+                                                          vertical: 10,
+                                                          horizontal: 20),
+                                                      child:
+                                                      Text(
+                                                        "Sold",
+                                                        style: AppTextStyle
+                                                            .regularBold
+                                                            .copyWith(
+                                                            color: primaryWhite,
+                                                            fontSize: 20),
+                                                      ),
+                                                    )),
+                                              )
+                                                  : SizedBox()),
+                                            )
+                                          ],
                                         ),
-                                      )),
+                                      );
+                                    },
+                                  ),
+                                )),
                                 SizedBox(
                                   height: 70,
                                 ),
@@ -664,25 +747,11 @@ class _HomeScreenState extends State<HomeScreen> {
           right: 20.0,
           child: FloatingActionButton(
             onPressed: () async {
-              // Navigate to the 'pet_add' page
+              // Get.to(()=>PaymentSuccessDialog());
 
-              Get.to(() => PetAdd())!
+            Get.to(() => PetAdd())!
                   .then((value) => controller.fetchPetDataFromFirestore());
-              // var result = await Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) => PetAdd(),
-              //   ),
-              // );
-              // if (result != null && result) {
-              //   controller.fetchPetDataFromFirestore();
-              // }
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) => PetAdd(),
-              //   ),
-              // ).then((value) => controller.fetchPetDataFromFirestore());
+
             },
             child: Icon(Icons.add),
           ),
@@ -690,4 +759,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ],
     );
   }
+
+
 }

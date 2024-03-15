@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pet/components/app_text_style.dart';
 import 'package:pet/components/colors.dart';
+import 'package:pet/components/static_decoration.dart';
 import 'package:pet/controller/authController.dart';
 import 'package:pet/pages/PaymentDetailsScreen.dart';
 import 'package:pet/pages/contactus.dart';
@@ -36,53 +38,31 @@ class _DrawerScreenState extends State<DrawerScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          height05,
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // CircleAvatar(),
-              SizedBox(
-                width: 10,
-              ),
 
-              FutureBuilder<UserModel>(
-                future: controller.getUserModel(user!.uid),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    UserModel userModel = snapshot.data!;
-                    // Now you can use the userModel in your UI
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          userModel.name ?? user!.displayName!,
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              height: 3),
-                        ),
-                        Text(
-                          userModel.email,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
-                        // Text( userModel.phone ?? user!.phoneNumber!,
-                        //     style: TextStyle(
-                        //         color: Colors.white,
-                        //         fontWeight: FontWeight.bold,
-                        //         fontSize: 20,
-                        //         height: -2))
-                      ],
-                    );
-                  }
-                },
-              ),
+      width15,
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisSize: MainAxisSize.min,
+        children: [
+          Obx(() =>
+          Text(
+            controller.currentUser.value != null ? controller.currentUser.value!.name ?? user!.displayName! : "UnKnown",
+            style: AppTextStyle.normalBold18.copyWith(color: primaryWhite),
+          ),
+          ),
+
+              Text(
+                "Active User",
+                style: AppTextStyle.normalBold18.copyWith(color: primaryWhite),
+          ),
+
+        ],
+      )
             ],
           ),
           GestureDetector(
@@ -146,28 +126,11 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 ),
               ))
                   .toList(),
+
             ),
           ),
-          Row(
-            children: [
-              Icon(Icons.settings, color: Colors.white),
-              SizedBox(
-                width: 10,
-                height: 20,
-              ),
-              Text(
-                'Settings',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20),
-              ),
-              SizedBox(
-                width: 10,
-                height: 20,
-              ),
-            ],
-          )
+          SizedBox(),
+          SizedBox(),
         ],
       ),
     );
