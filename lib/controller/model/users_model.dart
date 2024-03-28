@@ -7,7 +7,7 @@ class UserModel {
   final String? phone;
   final String? imageUrl;
   final String? password;
-  final String? confirmpassword;
+  // final String? confirmPassword;
 
   const UserModel({
     required this.id,
@@ -16,7 +16,7 @@ class UserModel {
     required this.email,
     required this.phone,
     required this.password,
-    required this.confirmpassword,
+    // required this.confirmPassword,
   });
 
   factory UserModel.fromDocumentSnapshot(DocumentSnapshot snapshot) {
@@ -28,11 +28,23 @@ class UserModel {
       email: data['Email'],
       phone: data['Phone'],
       password: data['Password'],
-      confirmpassword: data['Confirm Password'],
+      // confirmPassword: data['Confirm Password'],
     );
   }
 
-  toJson() {
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['id'],
+      name: json['Name'],
+      imageUrl: json['imageUrl'],
+      email: json['Email'],
+      phone: json['Phone'],
+      password: json['Password'],
+      // confirmPassword: json['Confirm Password'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {
       "id": id,
       "Name": name,
@@ -40,8 +52,7 @@ class UserModel {
       "imageUrl": imageUrl,
       "Password": password,
       "Phone": phone,
-      "Password": password,
-      "Confirm Password": confirmpassword,
+      // "Confirm Password": confirmPassword,
     };
 
     // Add phone only if it's not null
@@ -54,5 +65,4 @@ class UserModel {
 
     return json;
   }
-
 }

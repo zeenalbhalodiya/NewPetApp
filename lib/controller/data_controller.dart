@@ -5,12 +5,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:pet/components/colors.dart';
 import 'package:pet/components/common_methos.dart';
 import 'package:pet/controller/model/users_model.dart';
 import 'model/pet_model.dart';
 
 class DataController extends  GetxController {
+  RxBool isDrawerOpen = false.obs;
+  RxDouble xOffset = 0.0.obs;
+  RxDouble yOffset = 0.0.obs;
+  RxDouble scaleFactor = 1.0.obs;
   RxString selectedCategoryName = 'All'.obs;
   RxList<PetModel> petDataList = <PetModel>[].obs;
   RxList<PetModel> favoritePetDataList = <PetModel>[].obs;
@@ -53,8 +58,7 @@ TextEditingController searchTextController = TextEditingController();
         name: '',
         email: '',
         phone: '',
-        password: '',
-        confirmpassword: '', id: '',
+        password: '', id: '',
         imageUrl: ''
     );
     try {

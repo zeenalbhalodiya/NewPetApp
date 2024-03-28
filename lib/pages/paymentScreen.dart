@@ -3,15 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
-import 'package:pet/app.dart';
 import 'package:pet/components/colors.dart';
 import 'package:pet/components/common_methos.dart';
 import 'package:pet/pages/main_home_page.dart';
-import 'package:pet/pages/payment_success_dialog.dart';
 import 'dart:core';
-import '../components/app_text_style.dart';
-import '../components/buttons/text_button.dart';
-import '../components/static_decoration.dart';
 import '../controller/data_controller.dart';
 import '../controller/model/pet_model.dart';
 import 'PaymentDetailsScreen.dart';
@@ -22,7 +17,6 @@ class paymentScreen extends StatefulWidget {
   @override
   _PaymentScreenState createState() => _PaymentScreenState(pet: pet);
 }
-
 class _PaymentScreenState extends State<paymentScreen> {
   final PetModel pet;
   _PaymentScreenState({required this.pet}) ;
@@ -88,6 +82,59 @@ class _PaymentScreenState extends State<paymentScreen> {
     }
   }
 
+  void _addPaymentDetails(PetModel petModel) async {
+    try {
+      var cardNumber = cardNumberController.text;
+      var cardholderName = cardholderNameController.text;
+      var cvv = cvvController.text;
+      var expiryMonth = selectedMonth; // Assuming selectedMonth is String
+      var expiryYear = selectedYear; // Assuming selectedYear is String
+
+      // Add payment details to Firestore
+      var docRef = await FirebaseFirestore.instance.collection('payments').add({
+        'cardNumber': cardNumber,
+        'cardholderName': cardholderName,
+        'expiryDate': '$expiryMonth/$expiryYear',
+        'cvv': cvv,
+        'price': petModel.price,
+        'imageLink': petModel.imageLink,
+        'name': petModel.name,
+        'petId': petModel.id,
+        'timestamp': Timestamp.now(),
+      });
+
+      // Update the document with transactionId
+      await FirebaseFirestore.instance.collection('payments').doc(docRef.id).update({
+        'transactionId': docRef.id,
+      });
+
+      // Clear text fields
+      cardNumberController.clear();
+      cardholderNameController.clear();
+      cvvController.clear();
+
+      // Reset selected month and year
+      selectedMonth = null;
+      selectedYear = null;
+
+      // Display success message
+      CommonMethod().getXSnackBar("Success", "Payment Successfully done", success);
+
+      // Navigate to HomePage
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+
+      // Open alert box
+      openAlertBox();
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+      // Display error message
+      CommonMethod().getXSnackBar("Error", "Failed to add payment details", red);
+    }
+  }
+
+
+
   Future<void> savePaymentDetails(
       String upiId,
       String cardNumber,
@@ -98,37 +145,7 @@ class _PaymentScreenState extends State<paymentScreen> {
       PetModel petModel,
       ) async {
     if (upiId.isEmpty) {
-    await FirebaseFirestore.instance.collection('payments').add({
-        'cardNumber': cardNumber,
-        'cardholderName': cardholderName,
-        'expiryDate': '$expiryMonth/$expiryYear',
-        'cvv': cvv,
-        'price': petModel.price,
-        'imageLink': petModel.imageLink,
-        'name': petModel.name,
-        'petId': petModel.id,
-        'timestamp': Timestamp.now(),
-      }).then((DocumentReference docRef) {
-        print("Payment details added to Firestore with ID: ${docRef.id}");
-         FirebaseFirestore.instance.collection('payments').doc(docRef.id).update(
-            {
-              'transactionId':docRef.id
-            });
-        cardNumberController.clear();
-        cardholderNameController.clear();
-        cvvController.clear();
-        setState(() {
-          selectedMonth = null;
-          selectedYear = null;
-        });
-
-        CommonMethod().getXSnackBar("Success", "Payment Successfully done", success);
-
-        Get.off(()=>HomePage())!.then((value) => openAlertBox());
-
-      }).catchError((error) {
-         CommonMethod().getXSnackBar("Error","Failed to save payment details: $error",red);
-      });
+      _addPaymentDetails(petModel);
 
     } else {
       await FirebaseFirestore.instance.collection('upi_details').add({
@@ -143,16 +160,29 @@ class _PaymentScreenState extends State<paymentScreen> {
 
         // Show success message
         upiIdController.clear();
+        // CommonMethod().getXSnackBar("Success", "Payment Successfully done", success);
+        // Get.off(()=>HomePage())!.then((value) => openAlertBox());
+
+
+        // Display success message
         CommonMethod().getXSnackBar("Success", "Payment Successfully done", success);
-        Get.off(()=>HomePage())!.then((value) => openAlertBox());
+
+        // Navigate to HomePage
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+
+        // Open alert box
+        openAlertBox();
       }).catchError((error) {
-        CommonMethod().getXSnackBar("Error","Failed to save UPI ID: $error",red);
+        // Handle errors here
+        print("Error adding UPI ID: $error");
+        CommonMethod().getXSnackBar("Error", "Failed to save UPI ID: $error", red);
       });
     }
 
     FirebaseFirestore.instance.collection('catadd').doc(petModel.id).update(
         {
           'isSold':true,
+          "soldTime": DateTime.now(),
           "purchaseBy":user!.uid
         });
     controller.fetchPetDataFromFirestore();
@@ -179,13 +209,14 @@ class _PaymentScreenState extends State<paymentScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
+                  SizedBox(height: 20.0),
                   Text(
                     "Payment Successful!",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 20.0),
                   Icon(
-                    Icons.verified,
+                    Icons.check_circle,
                     color: Colors.green,
                     size: 100,
                   ),

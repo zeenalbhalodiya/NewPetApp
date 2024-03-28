@@ -172,7 +172,7 @@ var controller = Get.put(DataController());
                   });
                 }
 
-                controller.updateUser(user: UserModel(id: controller.user!.uid, imageUrl: imageUrl, name: _nameController.text, email: _emailController.text, phone: _phoneController.text, password: null, confirmpassword: null)).then((value) => controller.getUserModel(user!.uid));
+                controller.updateUser(user: UserModel(id: controller.user!.uid, imageUrl: imageUrl, name: _nameController.text, email: _emailController.text, phone: _phoneController.text, password: null)).then((value) => controller.getUserModel(user!.uid));
             }),
             height20,
           ],

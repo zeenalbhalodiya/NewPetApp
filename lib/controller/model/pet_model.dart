@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PetModel {
   String? id;
@@ -16,31 +16,31 @@ class PetModel {
   String? tax;
   String? priceText;
   bool? isSold;
+  DateTime? soldTime;
   String? purchaseBy;
 
-
   PetModel({
-    required this.id,
-    required this.name,
-    required this.userId,
-    required this.price,
-    required this.age,
-    required this.imageLink,
-    required this.category,
-    required this.description,
-    required this.favorite,
-    required this.breed,
-    required this.lifespan,
-    required this.weight,
-    required this.tax,
-    required this.priceText,
-    required this.isSold,
-    required this.purchaseBy,
+    this.id,
+    this.userId,
+    this.name,
+    this.price,
+    this.age,
+    this.imageLink,
+    this.category,
+    this.description,
+    this.favorite = const [],
+    this.breed,
+    this.lifespan,
+    this.weight,
+    this.tax,
+    this.priceText,
+    this.isSold,
+    this.soldTime,
+    this.purchaseBy,
   });
 
   factory PetModel.fromJson(Map<String, dynamic> json) {
-    List<String>? favorites = (json['favorite'] as List<dynamic>?)?.map((e) =>
-        e.toString()).toList();
+    List<String>? favorites = List<String>.from(json['favorite'] ?? []);
     return PetModel(
       id: json['id'],
       userId: json['userId'],
@@ -50,22 +50,24 @@ class PetModel {
       imageLink: json['imageLink'],
       category: json['category'],
       description: json['description'],
-      favorite: favorites ?? [],
+      favorite: favorites,
       breed: json['breed'],
       lifespan: json['lifespan'],
       weight: json['weight'],
       tax: json['tax'],
       priceText: json['priceText'],
       isSold: json['isSold'],
+      soldTime: json['soldTime'] != null ? (json['soldTime'] as Timestamp).toDate() : null,
+      // soldTime: json['soldTime'] != null ? DateTime.parse(json['soldTime']) : null,
       purchaseBy: json['purchaseBy'],
     );
   }
 
   Map<String, dynamic> toJson() {
-    Map<String, dynamic> json = {
+    return {
       'id': id,
-      'name': name,
       'userId': userId,
+      'name': name,
       'price': price,
       'age': age,
       'imageLink': imageLink,
@@ -76,13 +78,10 @@ class PetModel {
       'lifespan': lifespan,
       'weight': weight,
       'tax': tax,
-      'isSold': isSold,
       'priceText': priceText,
+      'isSold': isSold,
+      'soldTime': soldTime != null ? soldTime!.toIso8601String() : null,
       'purchaseBy': purchaseBy,
     };
-
-    // Remove key-value pairs with null or empty string values
-    json.removeWhere((key, value) => value == null || value == '');
-    return json;
   }
 }

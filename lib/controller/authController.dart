@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -97,9 +99,8 @@ class AuthController extends GetxController {
         imageUrl: null,
         email: user.email!,
         password: passwordController.text,
-        confirmpassword: confirmPasswordController.text,
         name: nameController.text.trim(),
-        phone: phoneController.text.trim(),
+        phone: phoneController.text.trim()
       ));
 
       // Show success message
@@ -146,8 +147,41 @@ class AuthController extends GetxController {
     userRepo.createUser(user.id!,user);
     // controller.registerWithEmailAndPassword(context);
   }
+
+
+
+// Define a method to refresh the user
+  Future<void> refreshUser() async {
+    // Get the current user
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      try {
+        // Reload the user to fetch the latest information
+        await user.reload();
+
+        // Update the user object if necessary
+        user = FirebaseAuth.instance.currentUser;
+
+        // Optionally, perform any actions after refreshing the user
+        // print('User refreshed successfully: ${user!.displayName}');
+      } catch (e) {
+        print('Error refreshing user: $e');
+      }
+    } else {
+      print('No user currently signed in.');
+    }
+  }
+
+
+
   // Sign in with email and password
   Future<String?> signInWithEmailAndPassword(BuildContext context) async {
+    refreshUser();
+    await _auth.signOut().whenComplete(() async {
+
+      log("----emailController.text-----" +  emailController.text.trim());
+      log("----passwordController.text-----" +  passwordController.text.trim());
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
           email: emailController.text.trim().toString(),
@@ -155,6 +189,8 @@ class AuthController extends GetxController {
 
       if (userCredential.user!.emailVerified) {
         // User is signed in and email is verified
+        passwordController.clear();
+        emailController.clear();
         await CommonMethod()
             .getXSnackBar("Success", 'Sign-in successfully', success)
             .whenComplete(() => Get.to(() => HomePage()));
@@ -169,7 +205,7 @@ class AuthController extends GetxController {
     } on FirebaseAuthException catch (e) {
       await CommonMethod()
           .getXSnackBar("Error", 'Failed to sign in: ${e.message}', red);
-    }
+    }});
   }
   Future<User?> handleSignInGoogle() async {
     try {
@@ -222,8 +258,11 @@ class AuthController extends GetxController {
   // Sign out
   Future<void> signOut() async {
     try {
-      await _auth.signOut().whenComplete(() =>
+
+      await _auth.signOut().whenComplete(() {
+        refreshUser().whenComplete(() =>
       Get.offAll(()=>LoginScreen()));
+      });
     } catch (e) {
       CommonMethod().getXSnackBar("Error", 'Error signing out: $e', red);
     }

@@ -57,3 +57,23 @@ List<Map> drawerItems = [
     'title':'Logout'
   },
 ];
+
+
+List<Map> drawerItemsForAdmin = [
+  {
+    'icon': Icons.pets,
+    'title': 'Sold Pet'
+  },
+  {
+    'icon': Icons.dashboard,
+    'title':'Dashboard'
+  },
+  {
+    'icon': Icons.pie_chart,
+    'title':'Reports'
+  },
+  {
+    'icon': FontAwesomeIcons.signOutAlt,
+    'title':'Logout'
+  },
+];

@@ -5,11 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:pet/components/app_text_style.dart';
-import 'package:pet/components/buttons/text_button.dart';
 import 'package:pet/components/common_methos.dart';
-import 'package:pet/components/static_decoration.dart';
 import 'package:pet/controller/data_controller.dart';
-import 'package:pet/pages/payment_success_dialog.dart';
 import 'package:pet/pages/pet_descreption.dart';
 import 'package:pet/pages/pet_add.dart';
 import '../components/colors.dart';
@@ -23,10 +20,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  double xOffset = 0;
-  double yOffset = 0;
-  double scaleFactor = 1;
-  bool isDrawerOpen = false;
+
   var controller = Get.put(DataController());
   String? selectedCategory;
   User? user = FirebaseAuth.instance.currentUser;
@@ -52,15 +46,16 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
+        Obx(() =>
         AnimatedContainer(
-          decoration: isDrawerOpen
+          decoration: controller.isDrawerOpen.value
               ? BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(25),
                 )
               : BoxDecoration(color: Colors.white),
-          transform: Matrix4.translationValues(xOffset, yOffset, 0)
-            ..scale(scaleFactor),
+          transform: Matrix4.translationValues(controller.xOffset.value, controller.yOffset.value, 0)
+            ..scale(controller.scaleFactor.value),
           duration: Duration(milliseconds: 250),
           child: SafeArea(
             child: Column(
@@ -70,17 +65,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 Container(
                   margin: EdgeInsets.symmetric(horizontal: 5.0),
-                  child: Row(
+                  child:
+                  Obx(()=>
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      isDrawerOpen
+                      controller.isDrawerOpen.value
                           ? IconButton(
                               onPressed: () {
                                 setState(() {
-                                  xOffset = 0;
-                                  yOffset = 0;
-                                  scaleFactor = 1;
-                                  isDrawerOpen = false;
+                                  controller.xOffset.value = 0.0;
+                                  controller.yOffset.value = 0.0;
+                                  controller.scaleFactor.value = 1.0;
+                                  controller.isDrawerOpen.value = false;
                                 });
                               },
                               icon: Icon(Icons.arrow_back_ios),
@@ -88,10 +85,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           : IconButton(
                               onPressed: () {
                                 setState(() {
-                                  xOffset = 230;
-                                  yOffset = 150;
-                                  scaleFactor = 0.6;
-                                  isDrawerOpen = true;
+                                  controller.xOffset.value = 230.0;
+                                  controller.yOffset.value = 150.0;
+                                  controller.scaleFactor.value = 0.6;
+                                  controller.isDrawerOpen.value = true;
                                 });
                               },
                               icon: Icon(Icons.menu),
@@ -121,26 +118,29 @@ class _HomeScreenState extends State<HomeScreen> {
                           )
                         ],
                       ),
-                      Container(
-                        margin: EdgeInsets.only(right: 10.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            Get.to(() => ProfileScreen());
-                          },
-                          child: Obx(() => CircleAvatar(
-                                backgroundImage: controller.currentUser !=
-                                            null &&
-                                        controller
-                                                .currentUser.value!.imageUrl !=
-                                            null
-                                    ? NetworkImage(
-                                        controller.currentUser.value!.imageUrl!)
-                                    : null,
-                              )),
+                      if (controller.currentUser != null)
+                        Container(
+                          margin: EdgeInsets.only(right: 10.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              Get.to(() => ProfileScreen());
+                            },
+                            child: Obx(() {
+                              final currentUser = controller.currentUser.value;
+                              if (currentUser != null &&
+                                  currentUser.imageUrl != null) {
+                                return CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(currentUser.imageUrl!),
+                                );
+                              } else {
+                                return CircleAvatar(); // or any other placeholder widget
+                              }
+                            }),
+                          ),
                         ),
-                      )
                     ],
-                  ),
+                  )),
                 ),
                 Container(
                   decoration: BoxDecoration(
@@ -187,10 +187,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                   letterSpacing: 1, color: Colors.grey[400]),
                               filled: true,
                               fillColor: Colors.white,
-                              suffixIcon: Icon(
-                                Icons.tune_sharp,
-                                color: Colors.grey[400],
-                              ),
                             ),
                           ),
                         ),
@@ -331,22 +327,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         Expanded(
                                                           child: Stack(
                                                             children: [
-
                                                               ColorFiltered(
-                                                                colorFilter: ColorFilter.mode(
-                                                                  controller
-                                                                      .petDataList[
-                                                                  index]
-                                                                      .isSold ==
-                                                                      true
+                                                                colorFilter:
+                                                                    ColorFilter
+                                                                        .mode(
+                                                                  controller.petDataList[index].isSold ==
+                                                                          true
                                                                       ? grey
-                                                                      .withOpacity(
-                                                                      .7)
-                                                                      :  Colors.transparent, // Adjust opacity and grey scale level as needed
-                                                                  BlendMode.srcATop,
+                                                                          .withOpacity(
+                                                                              .7)
+                                                                      : Colors
+                                                                          .transparent, // Adjust opacity and grey scale level as needed
+                                                                  BlendMode
+                                                                      .srcATop,
                                                                 ),
-                                                                child: Container(
-                                                                  height: 180.sp,
+                                                                child:
+                                                                    Container(
+                                                                  height:
+                                                                      180.sp,
                                                                   decoration:
                                                                       BoxDecoration(
                                                                     color: (index %
@@ -354,12 +352,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                             0)
                                                                         ? Colors.blueGrey[
                                                                             200]
-                                                                        : Colors.orangeAccent[
-                                                                            200],
+                                                                        : Colors
+                                                                            .orangeAccent[200],
                                                                     borderRadius:
-                                                                        BorderRadius
-                                                                            .circular(
-                                                                                30),
+                                                                        BorderRadius.circular(
+                                                                            30),
                                                                     boxShadow:
                                                                         shadowList,
                                                                     //database
@@ -600,19 +597,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                     GestureDetector(
                                                                       onTap:
                                                                           () {
-                                                                        if(  controller
-                                                                            .petDataList[
-                                                                        index]
-                                                                            .isSold ==
-                                                                            true){
-                                                                          CommonMethod().getXSnackBar("Error", "You cannot edit this pet because it has been sold", appColor);
-                                                                        }else{
+                                                                        if (controller.petDataList[index].isSold ==
+                                                                            true) {
+                                                                          CommonMethod().getXSnackBar(
+                                                                              "Error",
+                                                                              "You cannot edit this pet because it has been sold",
+                                                                              appColor);
+                                                                        } else {
                                                                           Get.to(() =>
                                                                               PetAdd(
                                                                                 petModel: controller.petDataList.value[index],
                                                                               ));
                                                                         }
-
                                                                       },
                                                                       child:
                                                                           Obx(
@@ -694,7 +690,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-        ),
+        )),
+
+        if((user!.email !=
+            controller.adminEmail))
         Positioned(
           bottom: 20.0,
           right: 20.0,

@@ -7,10 +7,13 @@ import 'package:pet/components/static_decoration.dart';
 import 'package:pet/controller/authController.dart';
 import 'package:pet/pages/PaymentDetailsScreen.dart';
 import 'package:pet/pages/contactus.dart';
+import 'package:pet/pages/reports_page.dart';
 import 'package:pet/pages/wishlist_screen.dart';
 import '../configuration/configuration.dart';
 import 'package:pet/pages/pet_add.dart';
 import '../controller/data_controller.dart';
+import 'admin_dashboard_screen.dart';
+import 'main_home_page.dart';
 
 class DrawerScreen extends StatefulWidget {
   @override
@@ -64,69 +67,107 @@ class _DrawerScreenState extends State<DrawerScreen> {
       )
             ],
           ),
-          GestureDetector(
-            onTap: () {
-              // Navigate to the WishlistPage
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => wishlist()),
-              // );
-            },
-            child: Column(
-              children: drawerItems
-                  .map((element) => GestureDetector(
-                onTap: () {
-                  print("----------test-------");
-                  if (element['title'] == 'Logout') {
-                    _showLogoutDialog(context);
-                  } else if (element['title'] == 'Add Pet') {
-                    Get.to(()=>PetAdd());
 
-                  } else if (element['title'] == 'Favourite') {
-                    // Handle favorite icon tap event
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => WishListScreen()),
-                    );
-                  } else if (element['title'] == 'Contact Us') {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ContactUsPage()),
-                    );
-                  }else if(element['title'] =='Transactions'){
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => PaymentDetailsScreen()),
-                    );
-                  }
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Row(
-                    children: [
-                      Icon(
-                        element['icon'],
-                        color: Colors.white,
-                        size: 25,
-                      ),
-                      SizedBox(
-                        width: 15,
-                      ),
-                      Text(element['title'],
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20))
-                    ],
-                  ),
+          user!.email ==
+              controller.adminEmail ?
+          Column(
+            children: drawerItemsForAdmin
+                .map((element) => GestureDetector(
+              onTap: () {
+                if (element['title'] == 'Logout') {
+                  _showLogoutDialog(context);
+                } else if (element['title'] == 'Sold Pet') {
+                  controller.xOffset.value = 0.0;
+                  controller.yOffset.value = 0.0;
+                  controller.scaleFactor.value = 1.0;
+                  controller.isDrawerOpen.value = false;
+controller.update();
+// Get.to(()=>HomePage());
+                } else if (element['title'] == 'Dashboard') {
+Get.to(()=>AdminDashboardPage());
+                } else if (element['title'] == 'Reports') {
+                  Get.to(()=>BarChartSample2());
+                  // Get.to(()=>WeeklyAnalysis());
+
+                }
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Row(
+                  children: [
+                    Icon(
+                      element['icon'],
+                      color: Colors.white,
+                      size: 25,
+                    ),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    Text(element['title'],
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20),),
+                  ],
                 ),
-              ))
-                  .toList(),
+              ),
+            ))
+                .toList(),
 
-            ),
+          ): Column(
+            children: drawerItems
+                .map((element) => GestureDetector(
+              onTap: () {
+                print("----------test-------");
+                if (element['title'] == 'Logout') {
+                  _showLogoutDialog(context);
+                } else if (element['title'] == 'Add Pet') {
+                  Get.to(()=>PetAdd());
+
+                } else if (element['title'] == 'Favourite') {
+                  // Handle favorite icon tap event
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => WishListScreen()),
+                  );
+                } else if (element['title'] == 'Contact Us') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ContactUsPage()),
+                  );
+                }else if(element['title'] =='Transactions'){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PaymentDetailsScreen()),
+                  );
+                }
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Row(
+                  children: [
+                    Icon(
+                      element['icon'],
+                      color: Colors.white,
+                      size: 25,
+                    ),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    Text(element['title'],
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20),),
+                  ],
+                ),
+              ),
+            ))
+                .toList(),
+
           ),
           SizedBox(),
           SizedBox(),

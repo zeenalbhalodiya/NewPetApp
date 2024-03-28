@@ -1,11 +1,10 @@
 import 'dart:developer';
-import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pet/components/colors.dart';
 import 'package:pet/components/common_methos.dart';
@@ -14,8 +13,6 @@ import '../configuration/configuration.dart';
 import '../controller/data_controller.dart';
 import '../controller/model/pet_model.dart';
 import '../utils/process_indicator.dart';
-import 'contactus.dart';
-import 'home_screen.dart';
 import 'main_home_page.dart';
 
 class PetAdd extends StatefulWidget {
@@ -40,7 +37,6 @@ class _PetAddState extends State<PetAdd> {
   String? selectedBreed;
   String? selectedLifespan;
   String? selectedWeight;
-  // String? description;
   double? tax;
   static Circle processIndicator = Circle();
   User? user = FirebaseAuth.instance.currentUser;
@@ -232,7 +228,7 @@ class _PetAddState extends State<PetAdd> {
                 priceText: totalPriceController.text,
                 imageLink: '',
                 purchaseBy: '',
-                id: widget.petModel!.id),
+                id: widget.petModel!.id, soldTime: null),
             file: _image ?? null,
             context: context,
             networkUrl: widget.petModel != null && _image == null
@@ -256,21 +252,17 @@ class _PetAddState extends State<PetAdd> {
               priceText: totalPriceController.text,
               imageLink: '',
               purchaseBy: '',
-              id: ''),
+              id: '', soldTime: null),
           file: _image!,
           context: context,
         );
       }
-      // } catch (error) {
-      //   CommonMethod()
-      //       .getXSnackBar("Error", "Failed to add: $error", Colors.red);
-      // }
     }
   }
 
   Future<String> uploadImageToStorage(String childName, Uint8List file) async {
     Reference ref =
-        _storage.ref().child(childName).child(file.length.toString());
+    _storage.ref().child(childName).child(file.length.toString());
     UploadTask uploadTask = ref.putData(file);
     TaskSnapshot snapshot = await uploadTask;
     String downloadUrl = await snapshot.ref.getDownloadURL();
@@ -377,21 +369,21 @@ class _PetAddState extends State<PetAdd> {
                 children: [
                   _image != null
                       ? CircleAvatar(
-                          radius: 64,
-                          backgroundImage: MemoryImage(_image!),
-                        )
+                    radius: 64,
+                    backgroundImage: MemoryImage(_image!),
+                  )
                       : widget.petModel != null &&
-                              widget.petModel!.imageLink != null
-                          ? CircleAvatar(
-                              radius: 64,
-                              backgroundImage:
-                                  NetworkImage(widget.petModel!.imageLink!),
-                            )
-                          : const CircleAvatar(
-                              radius: 64,
-                              backgroundImage: AssetImage(
-                                  'assets/images/png/avatar-pet.png'),
-                            ),
+                      widget.petModel!.imageLink != null
+                      ? CircleAvatar(
+                    radius: 64,
+                    backgroundImage:
+                    NetworkImage(widget.petModel!.imageLink!),
+                  )
+                      : const CircleAvatar(
+                    radius: 64,
+                    backgroundImage: AssetImage(
+                        'assets/images/png/avatar-pet.png'),
+                  ),
                   Positioned(
                     child: IconButton(
                       onPressed: selectImage,
@@ -410,8 +402,11 @@ class _PetAddState extends State<PetAdd> {
                     border: Border.all(color: Colors.grey),
                     borderRadius: BorderRadius.circular(8.0),
                   ),
-                  child: TextField(
+                  child: TextFormField(
                     controller: nameController,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                    ],
                     decoration: InputDecoration(
                       labelText: 'Name',
                       border: InputBorder.none,
@@ -436,9 +431,9 @@ class _PetAddState extends State<PetAdd> {
                     },
                     items: ageList
                         .map((age) => DropdownMenuItem<String>(
-                              value: age,
-                              child: Text(age),
-                            ))
+                      value: age,
+                      child: Text(age),
+                    ))
                         .toList(),
                     decoration: InputDecoration(
                       labelText: 'Age',
@@ -494,9 +489,9 @@ class _PetAddState extends State<PetAdd> {
                     },
                     items: categories
                         .map((category) => DropdownMenuItem<String>(
-                              value: category['name'],
-                              child: Text(category['name']),
-                            ))
+                      value: category['name'],
+                      child: Text(category['name']),
+                    ))
                         .toList(),
                     decoration: InputDecoration(
                       labelText: 'Category',
@@ -524,9 +519,9 @@ class _PetAddState extends State<PetAdd> {
                       items: breedList
                           .where((breed) => breed.contains(breed))
                           .map((breed) => DropdownMenuItem<String>(
-                                value: breed,
-                                child: Text(breed),
-                              ))
+                        value: breed,
+                        child: Text(breed),
+                      ))
                           .toList(),
                       decoration: InputDecoration(
                         labelText: 'Type of Breed',
@@ -557,9 +552,9 @@ class _PetAddState extends State<PetAdd> {
                       },
                       items: breedList
                           .map((breed) => DropdownMenuItem<String>(
-                                value: breed,
-                                child: Text(breed),
-                              ))
+                        value: breed,
+                        child: Text(breed),
+                      ))
                           .toList(),
                       decoration: InputDecoration(
                         labelText: 'Type of Breed',
@@ -588,9 +583,9 @@ class _PetAddState extends State<PetAdd> {
                     },
                     items: lifespan
                         .map((lifespan) => DropdownMenuItem<String>(
-                              value: lifespan,
-                              child: Text(lifespan),
-                            ))
+                      value: lifespan,
+                      child: Text(lifespan),
+                    ))
                         .toList(),
                     decoration: InputDecoration(
                       labelText: 'Lifespan',
@@ -616,9 +611,9 @@ class _PetAddState extends State<PetAdd> {
                     },
                     items: weight
                         .map((weight) => DropdownMenuItem<String>(
-                              value: weight,
-                              child: Text(weight),
-                            ))
+                      value: weight,
+                      child: Text(weight),
+                    ))
                         .toList(),
                     decoration: InputDecoration(
                       labelText: 'Weight',
