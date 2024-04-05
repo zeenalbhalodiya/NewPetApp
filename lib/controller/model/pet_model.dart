@@ -16,7 +16,7 @@ class PetModel {
   String? tax;
   String? priceText;
   bool? isSold;
-  DateTime? soldTime;
+  // String? soldTime;
   String? purchaseBy;
 
   PetModel({
@@ -35,9 +35,33 @@ class PetModel {
     this.tax,
     this.priceText,
     this.isSold,
-    this.soldTime,
+    // this.soldTime,
     this.purchaseBy,
   });
+
+  // factory PetModel.fromJson(Map<String, dynamic> json) {
+  //   List<String>? favorites = List<String>.from(json['favorite'] ?? []);
+  //   return PetModel(
+  //     id: json['id'],
+  //     userId: json['userId'],
+  //     name: json['name'],
+  //     price: json['price'],
+  //     age: json['age'],
+  //     imageLink: json['imageLink'],
+  //     category: json['category'],
+  //     description: json['description'],
+  //     favorite: favorites,
+  //     breed: json['breed'],
+  //     lifespan: json['lifespan'],
+  //     weight: json['weight'],
+  //     tax: json['tax'],
+  //     priceText: json['priceText'],
+  //     isSold: json['isSold'],
+  //     soldTime: json['soldTime'] != null ? (json['soldTime'] as Timestamp).toDate() : null,
+  //     // soldTime: json['soldTime'] != null ? DateTime.parse(json['soldTime']) : null,
+  //     purchaseBy: json['purchaseBy'],
+  //   );
+  // }
 
   factory PetModel.fromJson(Map<String, dynamic> json) {
     List<String>? favorites = List<String>.from(json['favorite'] ?? []);
@@ -57,11 +81,13 @@ class PetModel {
       tax: json['tax'],
       priceText: json['priceText'],
       isSold: json['isSold'],
-      soldTime: json['soldTime'] != null ? (json['soldTime'] as Timestamp).toDate() : null,
       // soldTime: json['soldTime'] != null ? DateTime.parse(json['soldTime']) : null,
+      // soldTime: json['soldTime'],
+
       purchaseBy: json['purchaseBy'],
     );
   }
+
 
   Map<String, dynamic> toJson() {
     return {
@@ -80,7 +106,7 @@ class PetModel {
       'tax': tax,
       'priceText': priceText,
       'isSold': isSold,
-      'soldTime': soldTime != null ? soldTime!.toIso8601String() : null,
+      // 'soldTime': soldTime ,
       'purchaseBy': purchaseBy,
     };
   }

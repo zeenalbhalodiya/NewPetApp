@@ -57,8 +57,7 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                           ),
                         ])
                       ]),
-                ),
-              ],
+                    ),],
             )),
             Container(
               margin: EdgeInsets.only(top: 20),

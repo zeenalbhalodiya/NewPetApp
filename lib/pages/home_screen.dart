@@ -134,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       NetworkImage(currentUser.imageUrl!),
                                 );
                               } else {
-                                return CircleAvatar(); // or any other placeholder widget
+                                return CircleAvatar();
                               }
                             }),
                           ),

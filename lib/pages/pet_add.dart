@@ -228,7 +228,7 @@ class _PetAddState extends State<PetAdd> {
                 priceText: totalPriceController.text,
                 imageLink: '',
                 purchaseBy: '',
-                id: widget.petModel!.id, soldTime: null),
+                id: widget.petModel!.id),
             file: _image ?? null,
             context: context,
             networkUrl: widget.petModel != null && _image == null
@@ -252,7 +252,7 @@ class _PetAddState extends State<PetAdd> {
               priceText: totalPriceController.text,
               imageLink: '',
               purchaseBy: '',
-              id: '', soldTime: null),
+              id: ''),
           file: _image!,
           context: context,
         );
