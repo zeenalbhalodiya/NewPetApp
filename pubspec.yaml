@@ -60,7 +60,7 @@ dependencies:
   path_provider: ^2.1.2
   flutter_bloc: ^8.1.4
   fl_chart:
-#  tflite: ^1.1.2
+  http: ^1.2.1
 
 dev_dependencies:
   flutter_test:
@@ -94,6 +94,7 @@ flutter:
     - assets/icons/png/
     - assets/images/svg/
     - assets/images/png/
+    - assets/images/jpg/
 
   fonts:
     - family: SofiaPro

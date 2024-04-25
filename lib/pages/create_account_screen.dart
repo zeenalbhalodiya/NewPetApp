@@ -24,7 +24,9 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   final controller = Get.put(AuthController());
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final emailRegex = RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
+  // final emailRegex = RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
+  final emailRegex = RegExp(r'^[\w-]+(\.[\w-]+)*@(?!.*\bname\b)[\w-]+(\.[\w-]+)*\.[a-zA-Z]{2,7}$');
+
   @override
   void initState() {
     super.initState();

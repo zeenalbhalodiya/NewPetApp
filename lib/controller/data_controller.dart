@@ -157,7 +157,6 @@ TextEditingController searchTextController = TextEditingController();
       petDataList.value = filteredPets;
     }
     petDataList.refresh();
-
   }
 
   Future<List<PetModel>> fetchPetDataFromFirestore() async {

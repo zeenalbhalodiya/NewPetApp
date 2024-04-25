@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../components/colors.dart';
+
 class ContactUsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -82,11 +83,15 @@ class ContactCard extends StatelessWidget {
               children: [
                 Icon(Icons.email, color: Colors.blue),
                 SizedBox(width: 10),
-                Text(
-                  email,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.blue,
+                GestureDetector(
+                  onTap: () => _launchEmail(email),
+                  child: Text(
+                    email,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.blue,
+                      decoration: TextDecoration.underline,
+                    ),
                   ),
                 ),
               ],
@@ -114,12 +119,27 @@ class ContactCard extends StatelessWidget {
       ),
     );
   }
+
   void _launchPhone(String phoneNumber) async {
     final url = 'tel:$phoneNumber';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
       throw 'Could not launch $url';
+    }
+  }
+
+  void _launchEmail(String email) async {
+    final Uri _emailLaunchUri = Uri(
+      scheme: 'mailto',
+      path: email,
+    );
+    final String uri = _emailLaunchUri.toString();
+
+    if (await canLaunch(uri)) {
+      await launch(uri);
+    } else {
+      throw 'Could not launch $uri';
     }
   }
 }

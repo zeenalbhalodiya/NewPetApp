@@ -482,7 +482,7 @@ class _PetAddState extends State<PetAdd> {
                             'Pitt Bull Dog',
                             'Border Collie Dog',
                             'Chihuahua Dog',
-                            'Rhodesian Ridgeback Dog'
+                            'Rhodesian Ridgeback Dog',
                           ];
                         }
                       });

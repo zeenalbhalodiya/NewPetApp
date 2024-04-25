@@ -6,10 +6,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:pet/components/app_text_style.dart';
 import 'package:pet/components/common_methos.dart';
+import 'package:pet/components/static_decoration.dart';
 import 'package:pet/controller/data_controller.dart';
 import 'package:pet/pages/pet_descreption.dart';
 import 'package:pet/pages/pet_add.dart';
 import '../components/colors.dart';
+import '../components/no_data.dart';
 import '../configuration/configuration.dart';
 import '../controller/model/users_model.dart';
 import 'ProfileScreen.dart';
@@ -36,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future saveUserId() async {
     if (user != null) {
       await FirebaseFirestore.instance
-          .collection("users")
+            .collection("users")
           .doc(user!.uid)
           .update({'id': user!.uid});
     }
@@ -253,17 +255,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
+
                 Expanded(
-                  child: SingleChildScrollView(
+                  child:
+                  Obx(()=>controller.petDataList.isEmpty
+                      ? NoDataFound():
+
+                  SingleChildScrollView(
                     child: SafeArea(
                       child: Column(
                         children: [
                           Container(
                             decoration: BoxDecoration(
                               color: Colors.grey[200],
-                              // borderRadius: BorderRadius.only(
-                              //     topRight: Radius.circular(25),
-                              //     topLeft: Radius.circular(25)),
                             ),
                             child: Column(
                               children: [
@@ -283,7 +287,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           scrollDirection: Axis.vertical,
                                           shrinkWrap: true,
                                           itemBuilder: (context, index) {
-                                            //database
+
                                             return GestureDetector(
                                               onTap: () {
                                                 if (controller
@@ -337,7 +341,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                           .withOpacity(
                                                                               .7)
                                                                       : Colors
-                                                                          .transparent, // Adjust opacity and grey scale level as needed
+                                                                          .transparent,
                                                                   BlendMode
                                                                       .srcATop,
                                                                 ),
@@ -439,14 +443,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                             .grey[600],
                                                                       ),
                                                                     ),
-                                                                    // (catMapList[index]['sex'] == 'male') ? Icon(
-                                                                    //   Icons.male_rounded,
-                                                                    //   color: Colors.grey[500],
-                                                                    // ) :
-                                                                    // Icon(
-                                                                    //   Icons.female_rounded,
-                                                                    //   color: Colors.grey[500],
-                                                                    // ),
                                                                     GestureDetector(
                                                                       onTap:
                                                                           () {
@@ -488,10 +484,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                           CrossAxisAlignment
                                                                               .start,
                                                                       children: [
-                                                                        // Text('Breed :',style: TextStyle(
-                                                                        //   fontWeight: FontWeight.bold,
-                                                                        //   color: Colors.grey[500],
-                                                                        // ),),
                                                                         Expanded(
                                                                           child: Text(
                                                                               controller.petDataList[index].breed.toString(),
@@ -543,10 +535,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                     children: [
                                                                       Row(
                                                                         children: [
-                                                                          // Text('Profit : ',   style: TextStyle(
-                                                                          //   fontWeight: FontWeight.bold,
-                                                                          //   color: Colors.grey[500],
-                                                                          // ),),
                                                                           Text(
                                                                             '${controller.petDataList[index].tax ?? "0"}',
                                                                             style:
@@ -574,12 +562,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                               // While data is loading
                                                                               return CircularProgressIndicator();
                                                                             } else if (snapshot.hasError) {
-                                                                              // If an error occurred
                                                                               return Text('Error: ${snapshot.error}');
                                                                             } else {
-                                                                              // If data is successfully loaded
                                                                               final userModel = snapshot.data;
-                                                                              // Use the userModel object as needed
                                                                               return Text('User Name: ${userModel!.name}');
                                                                             }
                                                                           },
@@ -622,6 +607,70 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                             : SizedBox(),
                                                                       ),
                                                                     ),
+width15,
+                                                                    GestureDetector(
+                                                                      onTap:
+                                                                          () {
+                                                                        if (controller.petDataList[index].isSold ==
+                                                                            true) {
+                                                                          CommonMethod().getXSnackBar(
+                                                                              "Error",
+                                                                              "You cannot delete this pet because it has been sold",
+                                                                              appColor);
+                                                                        } else {
+                                                                          showDialog(
+                                                                            context: context,
+                                                                            builder: (BuildContext context) {
+                                                                              return AlertDialog(
+                                                                                title: Text("Confirm Delete"),
+                                                                                content: Text("Are you sure you want to delete this data?"),
+                                                                                actions: <Widget>[
+                                                                                  TextButton(
+                                                                                    onPressed: () {
+                                                                                      Navigator.of(context).pop(); // Close the dialog
+                                                                                    },
+                                                                                    child: Text("Cancel"),
+                                                                                  ),
+                                                                                  TextButton(
+                                                                                    onPressed: () {
+                                                                                      // Delete the data
+                                                                                      FirebaseFirestore.instance
+                                                                                          .collection('catadd')
+                                                                                          .doc(controller.petDataList.value[index].id)
+                                                                                          .delete()
+                                                                                          .then((value) {
+                                                                                        print("Document successfully deleted.");
+                                                                                        Navigator.of(context).pop(); // Close the dialog
+                                                                                        CommonMethod().getXSnackBar("Success", "Data deleted successfully", success);
+                                                                                        controller.fetchPetDataFromFirestore();
+                                                                                      }).catchError((error) {
+                                                                                        print("Error deleting document: $error");
+                                                                                        Navigator.of(context).pop(); // Close the dialog
+                                                                                      });
+                                                                                    },
+                                                                                    child: Text("Delete"),
+                                                                                  ),
+                                                                                ],
+                                                                              );
+                                                                            },
+                                                                          );
+
+                                                                        }
+                                                                      },
+                                                                      child:
+                                                                      Obx(
+                                                                            () => controller.petDataList[index].userId ==
+                                                                            user!.uid
+                                                                            ? Icon(
+                                                                          Icons.delete,
+                                                                          color: appColor,
+                                                                          size: 18,
+                                                                        )
+                                                                            : SizedBox(),
+                                                                      ),
+                                                                    ),
+
+
                                                                   ],
                                                                 )
                                                               ],
@@ -685,7 +734,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                  ),
+                  ),),
                 ),
               ],
             ),
@@ -699,8 +748,6 @@ class _HomeScreenState extends State<HomeScreen> {
           right: 20.0,
           child: FloatingActionButton(
             onPressed: () async {
-              // Get.to(()=>PaymentSuccessDialog());
-
               Get.to(() => PetAdd())!
                   .then((value) => controller.fetchPetDataFromFirestore());
             },

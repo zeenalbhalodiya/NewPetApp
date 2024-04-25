@@ -132,9 +132,6 @@ class _PaymentScreenState extends State<paymentScreen> {
       CommonMethod().getXSnackBar("Error", "Failed to add payment details", red);
     }
   }
-
-
-
   Future<void> savePaymentDetails(
       String upiId,
       String cardNumber,

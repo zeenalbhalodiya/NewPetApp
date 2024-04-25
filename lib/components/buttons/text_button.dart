@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pet/components/app_text_style.dart';
 import 'package:pet/components/colors.dart';
-import 'package:pet/components/static_decoration.dart';
 
-// ignore: must_be_immutable
 class PrimaryTextButton extends StatelessWidget {
   String? title;
   VoidCallback onPressed;
@@ -36,12 +34,10 @@ class PrimaryTextButton extends StatelessWidget {
     return TextButton(
       autofocus: autofocus,
       style: TextButton.styleFrom(
-        shape: RoundedRectangleBorder(
+        foregroundColor: textColor ?? primaryWhite, shape: RoundedRectangleBorder(
           side: border ?? BorderSide.none,
           borderRadius: borderRadius ?? BorderRadius.circular(12),
-        ),
-        primary: textColor ?? primaryWhite,
-        onSurface: primaryWhite,
+        ), disabledForegroundColor: primaryWhite.withOpacity(0.38),
         backgroundColor: buttonColor ?? appColor,
         fixedSize: Size(
           width ?? Get.width,

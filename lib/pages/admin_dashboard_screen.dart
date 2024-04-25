@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:get/get.dart';
-
 import '../components/colors.dart';
 import '../controller/adminController.dart';
+import 'dart:math';
 
 
 class AdminDashboardPage extends StatefulWidget {
@@ -24,11 +24,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
 
   };
 
-
   @override
   void initState() {
     refreshPage().whenComplete(() {
-
     });
     super.initState();
   }
@@ -83,19 +81,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-
-
-
-
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Pie Charts',
           style: TextStyle(color: Colors.white),),
         backgroundColor: appColor,
-        actions: [
-
-        ],
+        actions: [],
       ),
       body: Column(
         children: [
@@ -115,7 +106,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             ),
           ),
           SizedBox(height: 20),
-          UserLegendTable()
+          UserLegendTable(),
+          SizedBox(height: 30),
         ],
       ),
     );
@@ -125,34 +117,113 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
 class UserLegendTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Table(
-        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-        border: TableBorder.all(color: Colors.grey),
-        children:
-
-        _AdminDashboardPageState.titleToColor.entries.map((entry) => TableRow(
-          children: [
-            Container(
-              color: entry.value,
-              width: 30,
-              height: 30,
-              margin: EdgeInsets.all(5),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(
-                entry.key,
-                style: TextStyle(fontSize: 16),
-              ),
+    return Center(
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Colors.grey.shade200,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: Offset(0, 3),
             ),
           ],
-        )).toList()
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: _AdminDashboardPageState.titleToColor.entries.map((entry) {
+            Color color = entry.value;
+            String title = entry.key;
 
-
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                children: [
+                  AnimatedShape(color: color),
+                  SizedBox(width: 10),
+                  Text(
+                    title,
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+        ),
       ),
     );
   }
 }
 
+class AnimatedShape extends StatefulWidget {
+  final Color color;
+
+  AnimatedShape({required this.color});
+
+  @override
+  _AnimatedShapeState createState() => _AnimatedShapeState();
+}
+
+class _AnimatedShapeState extends State<AnimatedShape>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller =
+    AnimationController(duration: Duration(seconds: 2), vsync: this)
+      ..repeat(reverse: true);
+    _animation = Tween<double>(begin: 0, end: 2 * pi).animate(_controller);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Transform.rotate(
+          angle: _animation.value,
+          child: CustomPaint(
+            size: Size(30, 30),
+            painter: ShapePainter(widget.color),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+}
+
+class ShapePainter extends CustomPainter {
+  final Color color;
+
+  ShapePainter(this.color);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+    final path = Path();
+
+    path.moveTo(size.width / 2, 0);
+    path.lineTo(size.width, size.height / 2);
+    path.lineTo(size.width / 2, size.height);
+    path.lineTo(0, size.height / 2);
+    path.close();
+
+    canvas.drawPath(path, paint);
+  }
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
+  }
+}

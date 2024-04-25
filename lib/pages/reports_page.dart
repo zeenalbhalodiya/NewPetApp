@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:pet/components/app_text_style.dart';
 import 'package:pet/components/colors.dart';
 
+import 'admin_dashboard_screen.dart';
+
 class BarChartSample2 extends StatefulWidget {
   final Key? key;
   BarChartSample2({this.key});
@@ -29,18 +31,12 @@ class BarChartSample2State extends State<BarChartSample2> {
     final barGroup2 = makeGroupData(1, 16, 12);
     final barGroup3 = makeGroupData(2, 18, 5);
     final barGroup4 = makeGroupData(3, 20, 16);
-    // final barGroup5 = makeGroupData(4, 17, 6);
-    // final barGroup6 = makeGroupData(5, 19, 1.5);
-    // final barGroup7 = makeGroupData(6, 10, 1.5);
 
     final items = [
       barGroup1,
       barGroup2,
       barGroup3,
       barGroup4,
-      // barGroup5,
-      // barGroup6,
-      // barGroup7,
     ];
 
     rawBarGroups = items;
@@ -158,6 +154,10 @@ class BarChartSample2State extends State<BarChartSample2> {
                 height: 20,
               ),
 
+              AnimalLegendTable(),
+              const SizedBox(
+                height: 20,
+              ),
 
               Center(
                 child: const Text(
@@ -258,6 +258,7 @@ class BarChartSample2State extends State<BarChartSample2> {
     );
   }
 
+
   Widget leftTitles(double value, TitleMeta meta) {
     const style = TextStyle(
       color: Color(0xff7589a2),
@@ -304,6 +305,7 @@ class BarChartSample2State extends State<BarChartSample2> {
     );
   }
 
+
   BarChartGroupData makeGroupData(int x, double y1, double y2) {
     return BarChartGroupData(
       barsSpace: 4,
@@ -325,7 +327,61 @@ class BarChartSample2State extends State<BarChartSample2> {
   }
 
 }
+class AnimalLegendTable extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Colors.grey.shade200,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 1,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Pink color row for "Cat"
+            _buildLegendRow(AppColors.contentColorRed, "Cat"),
+            SizedBox(height: 2),
+            // Yellow color row for "Dog"
+            _buildLegendRow(AppColors.contentColorYellow, "Dog"),
+          ],
+        ),
+      ),
+    );
+  }
 
+  Widget _buildLegendRow(Color color, String name) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Container(
+            width: 20,
+            height: 20,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+          ),
+          SizedBox(width: 10),
+          Text(
+            name,
+            style: TextStyle(fontSize: 16, color: Colors.black),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class AppColors {
   static const Color primary = contentColorCyan;

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pet/components/app_text_style.dart';
 import 'package:pet/components/colors.dart';
+import 'package:pet/components/common_methos.dart';
 import 'package:pet/configuration/configuration.dart';
 import 'package:pet/controller/data_controller.dart';
 import 'package:pet/pages/paymentScreen.dart';
@@ -186,6 +187,7 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                 height: 100,
                 child: Row(
                   children: [
+                    if(user != null)
                     GestureDetector(
                       onTap: () {
                         controller.updatePetDataInFirestore(
@@ -225,13 +227,16 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          // Navigate to PaymentScreen
+                          // Navigate to
+                          if(user != null && widget.pet.userId != user!.uid
+                          ){
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => paymentScreen(pet: widget.pet,),
                             ),
-                          );
+                          );}else{
+                            CommonMethod().getXSnackBar("Error", "You can not buy your pet", red);                          }
                         },
                         child: Container(
                           height: 60,
