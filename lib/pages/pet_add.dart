@@ -332,7 +332,6 @@ class _PetAddState extends State<PetAdd> {
       CommonMethod().getXSnackBar("Success", 'Failed to add pet: $error', red);
     }
   }
-
   Future refreshPetEditData() async {
     if (widget.petModel != null) {
       log("---widget.petModel--- ${widget.petModel!.toJson()}");
@@ -532,14 +531,8 @@ class _PetAddState extends State<PetAdd> {
                   ),
                 ),
               if (selectedCategory != null && selectedCategory == 'Dog')
-
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  // child: Container(
-                  //   decoration: BoxDecoration(
-                  //     border: Border.all(color: Colors.grey),
-                  //     borderRadius: BorderRadius.circular(8.0),
-                  //   ),
                   child: SizedBox(
                     height: 50,
                     width: 440,

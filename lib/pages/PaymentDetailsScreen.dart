@@ -48,10 +48,7 @@ iconTheme: IconThemeData(color: primaryWhite),
             padding: const EdgeInsets.all(15),
             child: Text("UPI Transaction",style: AppTextStyle.normalBold18,),
           ),
-
           Obx(() => Column(children: controller.upiTransferList.value.map((e) => animalWidget(true,e)).toList(),)),
-
-
         ],
       ),
     );

@@ -235,34 +235,26 @@ class _PaymentScreenState extends State<paymentScreen> {
       ),
     );
   }
-
-
-
-
   @override
   void initState() {
     super.initState();
     upiIdController.addListener(updateVerifyButtonState);
   }
-
   void dispose() {
     upiIdController.removeListener(updateVerifyButtonState);
     super.dispose();
   }
-
   void updateVerifyButtonState() {
     setState(() {
       isVerifyButtonEnabled = upiIdController.text.isNotEmpty &&
           RegExp(r'^[a-zA-Z0-9@]+$').hasMatch(upiIdController.text);
     });
   }
-
   String getCurrentMonth() {
     DateTime now = DateTime.now();
     String formattedMonth = DateFormat('MMMM').format(now);
     return formattedMonth;
   }
-
   String getCurrentYear() {
     DateTime now = DateTime.now();
     String formatted = DateFormat('yyyy').format(now);
@@ -278,7 +270,6 @@ class _PaymentScreenState extends State<paymentScreen> {
           selectedYear ?? getCurrentYear(),
           cvvController.text,pet);
   }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -424,12 +415,9 @@ class _PaymentScreenState extends State<paymentScreen> {
                                         expiryMonth.isEmpty ||
                                         expiryYear.isEmpty ||
                                         cvv.isEmpty) {
-
                                       CommonMethod().getXSnackBar("Error", 'Please fill all the fields.', red);
-
                                       return;
                                     }
-
                                     savePaymentDetails(
                                       upiIdController.text,
                                       cardNumberController.text,

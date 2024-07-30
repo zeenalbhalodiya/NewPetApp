@@ -1,33 +1,37 @@
-// import 'package:http/http.dart' as http;
 // import 'dart:convert';
+// import 'dart:io';
+// import 'package:http/http.dart' as http;
 //
-// Future<void> detectCatImage(String imageUrl) async {
-//   String apiKey = 'YOUR_API_KEY';
-//   String apiUrl = 'API_ENDPOINT';
+// Future<void> detectDogOrCat(String imagePath) async {
+//   // Replace with your Petfinder API key
+//   const String apiKey = 'YOUR_PETFINDER_API_KEY';
+//   const String apiUrl = 'https://api.petfinder.com/v2/animals';
+//
+//   // Read image file as bytes
+//   final imageBytes = await File(imagePath).readAsBytes();
 //
 //   try {
-//     final response = await http.post(
+//     final response = await http.get(
 //       Uri.parse(apiUrl),
 //       headers: <String, String>{
-//         'Content-Type': 'application/json',
 //         'Authorization': 'Bearer $apiKey',
 //       },
-//       body: jsonEncode(<String, dynamic>{
-//         'imageUrl': imageUrl,
-//       }),
 //     );
 //
 //     if (response.statusCode == 200) {
 //       // Parse response JSON
 //       Map<String, dynamic> responseData = jsonDecode(response.body);
-//       bool isCatDetected = responseData['isCatDetected'];
+//       List<dynamic> animals = responseData['animals'];
 //
-//       if (isCatDetected) {
-//         // Cat is detected, handle accordingly
-//         print('Cat detected in the image!');
+//       // Check if there are any cats or dogs in the response
+//       bool isDogOrCat = animals.any((animal) => animal['type'] == 'Cat' || animal['type'] == 'Dog');
+//
+//       if (isDogOrCat) {
+//         // Cat or dog is detected, you can proceed with further actions
+//         print('Cat or dog detected in the image!');
 //       } else {
-//         // No cat detected
-//         print('No cat detected in the image.');
+//         // No cat or dog detected, display error message
+//         print('Only cat and dog images are allowed!');
 //       }
 //     } else {
 //       // Handle error response

@@ -128,7 +128,6 @@ class ContactCard extends StatelessWidget {
       throw 'Could not launch $url';
     }
   }
-
   void _launchEmail(String email) async {
     final Uri _emailLaunchUri = Uri(
       scheme: 'mailto',

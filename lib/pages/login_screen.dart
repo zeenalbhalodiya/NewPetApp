@@ -107,7 +107,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   customHeight(25),
                   const OrWidget(),
                   customHeight(25),
-
                   ShadowContainerWidget(
                       padding: 0,
                       widget: SizedBox(
